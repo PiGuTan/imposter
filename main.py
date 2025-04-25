@@ -22,10 +22,16 @@ async def on_ready():
 
 @bot.event
 async def on_message(message):
-    if message.author.bot or not message.content.startswith(f'<@{bot.user.id}>'):
+    if message.author.bot:
         return
-    content = message.content.split(" ",maxsplit=1)[-1]
+    is_guild_message : bool = bool(message.channel.guild)
+    if  is_guild_message and not message.content.startswith(f'<@{bot.user.id}>'): #in cahnnel + ping
+        return
+
+    content = message.content.split(" ",maxsplit=1)[-1] if is_guild_message else message.content
     logging.debug(f"Received message: {content}")
+
+    pass #process content
 
     await message.channel.send(content)
 
