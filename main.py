@@ -25,10 +25,11 @@ async def on_message(message):
     if message.author.bot:
         return
     is_guild_message : bool = bool(message.channel.guild)
-    if  is_guild_message and not message.content.startswith(f'<@{bot.user.id}>'): #in cahnnel + ping
+    is_ping_message : bool = message.content.startswith(f'<@{bot.user.id}>')
+    if  is_guild_message and not is_ping_message:
         return
 
-    content = message.content.split(" ",maxsplit=1)[-1] if is_guild_message else message.content
+    content = message.content.split(" ",maxsplit=1)[-1] if is_ping_message else message.content
     logging.debug(f"Received message: {content}")
 
     pass #process content
@@ -36,26 +37,5 @@ async def on_message(message):
     await message.channel.send(content)
 
     await bot.process_commands(message)
-
-@bot.command()
-async def hello(ctx):
-    await ctx.send(f"Hello {ctx.author.mention}!")
-
-@bot.command()
-async def dm(ctx, *, msg):
-    await ctx.author.send(f"You said {msg}")
-
-@bot.command()
-async def reply(ctx):
-    await ctx.reply("This is a reply to your message!")
-
-@bot.command()
-async def poll(ctx, *, question):
-    embed = discord.Embed(title="New Poll", description=question)
-    poll_message = await ctx.send(embed=embed)
-    await poll_message.add_reaction("👍")
-    await poll_message.add_reaction("👎")
-
-
 
 bot.run(token, log_handler=handler, log_level=logging.DEBUG)
