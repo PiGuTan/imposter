@@ -32,6 +32,8 @@ async def on_message(message):
     content = message.content.split(" ",maxsplit=1)[-1] if is_ping_message else message.content
     logging.debug(f"Received message: {content}")
 
+    if is_guild_message:
+        await message.delete()
     pass #process content
 
     await message.channel.send(content)

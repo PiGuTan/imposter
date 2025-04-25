@@ -36,6 +36,28 @@ handle private message - `fdgas` should be found in logs
 #### Test 2 - no ping
 send private message to bot without ping
 e.g. `dfsadfgs sgdfhs`
-Expect 
+Expect: 
 **DO NOT** handle private message - `dfsadfgs sgdfhs` should **not** be found in logs
+
+#### Test 3 - multiple ping
+pings multiple user with imposter included (imposter should not be the first)
+e.g. `@pigu @imposter abcdefg`
+Expect:
+idk?
+
+## 1.2. Delete message
+### Test 1 - Guild chat 
+Successful process
+Expect:
+deletes message
+
+### Test 2 - Guild chat (fail)
+Failed process
+Expect:
+message fail
+
+### Test 3 - private message
+Successful process
+Expect:
+**DO NOT** delete message
 
