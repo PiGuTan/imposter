@@ -3,12 +3,7 @@ import json
 import os
 import logging
 
-import curlify
-
 host = "https://open.api.nexon.com/"
-
-handler = logging.FileHandler(filename='client.log', encoding='utf-8', mode='w')
-
 
 class Data_Agent:
     def __init__(self, character_name: str, date: str = None):
@@ -36,7 +31,7 @@ class Data_Agent:
         }
 
         response = requests.request("GET", url, headers=headers, data={}, params=params)
-        print(curlify.to_curl(response.request))
+
         pass  # handle for non 200 code
 
         self.resp_headers = response.headers
