@@ -4,6 +4,8 @@ import logging
 from dotenv import load_dotenv
 import os
 
+from core import Character
+
 load_dotenv()
 token = os.getenv('DISCORD_TOKEN')
 
@@ -34,9 +36,12 @@ async def on_message(message):
 
     if is_guild_message:
         await message.delete()
+
     pass #process content
 
-    await message.channel.send(content)
+    output = Character(content).image_url # TODO: this doesnt process content maybe add a middleware?
+
+    await message.channel.send(output) #send content
 
     await bot.process_commands(message)
 
