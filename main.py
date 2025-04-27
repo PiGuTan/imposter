@@ -3,7 +3,10 @@ from discord.ext import commands
 import logging
 from dotenv import load_dotenv
 import os
+import io
 
+from core import Character_Image
+from core import content_processorr
 from core import Character
 
 load_dotenv()
@@ -37,11 +40,19 @@ async def on_message(message):
     if is_guild_message:
         await message.delete()
 
-    pass #process content
+    # single frames
+    #output = Character(content).image_url # TODO: this doesnt process content maybe add a middleware?
+    # await message.channel.send(output) #send content
 
-    output = Character(content).image_url # TODO: this doesnt process content maybe add a middleware?
-
-    await message.channel.send(output) #send content
+    # multiple frames
+    content, command = content_processorr.pre_process_content(content)
+    output = Character(content).image_url
+    a_frames = [0, 1, 2, 0, 1, 2]
+    e_frames = [0, 1, 0, 1, 0, 1]
+    image = Character_Image(output, command)
+    image.get_images(a_frames=a_frames, e_frames=e_frames)
+    output_bytes = image.process_image()
+    await message.channel.send(file=discord.File(io.BytesIO(output_bytes), filename=f"{content}.gif"))
 
     await bot.process_commands(message)
 
