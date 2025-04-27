@@ -2,8 +2,14 @@ import requests
 import json
 import os
 import logging
+from dotenv import load_dotenv
 
 host = "https://open.api.nexon.com/"
+
+load_dotenv()
+headers = {
+    "x-nxopen-api-key": os.getenv('OPENAPI_TOKEN'),
+}
 
 class Data_Agent:
     def __init__(self, character_name: str, date: str = None):
@@ -26,13 +32,12 @@ class Data_Agent:
             logging.error(f"endpoint is empty %s", self.call_stack)
             return {}
 
-        headers = {
-            "x-nxopen-api-key": os.getenv('OPENAPI_TOKEN'),
-        }
 
         response = requests.request("GET", url, headers=headers, data={}, params=params)
 
-        pass  # handle for non 200 code
+        if response.status_code != 200:
+            logging.error(response.status_code)
+            return {}
 
         self.resp_headers = response.headers
         self.call_stack[endpoint] = self.resp_headers["x-request-id"]
