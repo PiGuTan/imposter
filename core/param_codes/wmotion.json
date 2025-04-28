@@ -1,0 +1,36 @@
+{
+  "W00": {
+    "name": "default",
+    "used_names": [
+      "default"
+    ]
+  },
+  "W01": {
+    "name": "One-handed",
+    "used_names": [
+      "One-handed",
+      "1h",
+      "1handed"
+    ]
+  },
+  "W02": {
+    "name": "Two-handed",
+    "used_names": [
+      "Two-handed",
+      "2h",
+      "2handed"
+    ]
+  },
+  "W03": {
+    "name": "Gun",
+    "used_names": [
+      "gun"
+    ]
+  },
+  "W04": {
+    "name": "No",
+    "used_names": [
+      "none"
+    ]
+  }
+}
