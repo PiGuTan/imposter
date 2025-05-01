@@ -17,6 +17,8 @@ class Character:
     def get_ocid(self):
         if not self._ocid:
             resp_dict = self.data_agent.get_ocid()
+            if "ocid" not in resp_dict:
+                return
             self._ocid = resp_dict["ocid"]
             self.data_agent.set_ocid(self._ocid)
 
@@ -25,6 +27,8 @@ class Character:
     def image_url(self):
         if not self._image_url:
             self.get_ocid()
+            if not self._ocid:
+                return ""
             resp_dict = self.data_agent.get_basic_info()
             self._image_url = resp_dict["character_image"]
         return self._image_url
