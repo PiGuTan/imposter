@@ -1,0 +1,794 @@
+{
+  "E00": {
+    "name": "default",
+    "frames": [
+      0
+    ],
+    "used_names": [
+      "E00",
+      "default"
+    ]
+  },
+  "E01": {
+    "name": "wink",
+    "frames": [
+      0
+    ],
+    "used_names": [
+      "E01",
+      "wink"
+    ]
+  },
+  "E02": {
+    "name": "smile",
+    "frames": [
+      0
+    ],
+    "used_names": [
+      "E02",
+      "smile"
+    ]
+  },
+  "E03": {
+    "name": "cry",
+    "frames": [
+      0
+    ],
+    "used_names": [
+      "E03",
+      "cry"
+    ]
+  },
+  "E04": {
+    "name": "angry",
+    "frames": [
+      0
+    ],
+    "used_names": [
+      "E04",
+      "angry"
+    ]
+  },
+  "E05": {
+    "name": "bewildered",
+    "frames": [
+      0
+    ],
+    "used_names": [
+      "E05",
+      "bewildered"
+    ]
+  },
+  "E06": {
+    "name": "blink",
+    "frames": [
+      0,
+      1,
+      2
+    ],
+    "used_names": [
+      "E06",
+      "blink"
+    ]
+  },
+  "E07": {
+    "name": "blaze",
+    "frames": [
+      0,
+      1
+    ],
+    "used_names": [
+      "E07",
+      "blaze"
+    ]
+  },
+  "E08": {
+    "name": "bowing",
+    "frames": [
+      0,
+      1
+    ],
+    "used_names": [
+      "E08",
+      "bowing"
+    ]
+  },
+  "E09": {
+    "name": "cheers",
+    "frames": [
+      0
+    ],
+    "used_names": [
+      "E09",
+      "cheers"
+    ]
+  },
+  "E10": {
+    "name": "chu",
+    "frames": [
+      0
+    ],
+    "used_names": [
+      "E10",
+      "chu"
+    ]
+  },
+  "E11": {
+    "name": "dam",
+    "frames": [
+      0,
+      1
+    ],
+    "used_names": [
+      "E11",
+      "dam"
+    ]
+  },
+  "E12": {
+    "name": "despair",
+    "frames": [
+      0,
+      1
+    ],
+    "used_names": [
+      "E12",
+      "despair"
+    ]
+  },
+  "E13": {
+    "name": "glitter",
+    "frames": [
+      0,
+      1
+    ],
+    "used_names": [
+      "E13",
+      "glitter"
+    ]
+  },
+  "E14": {
+    "name": "hit",
+    "frames": [
+      0
+    ],
+    "used_names": [
+      "E14",
+      "hit"
+    ]
+  },
+  "E15": {
+    "name": "hot",
+    "frames": [
+      0,
+      1
+    ],
+    "used_names": [
+      "E15",
+      "hot"
+    ]
+  },
+  "E16": {
+    "name": "hum",
+    "frames": [
+      0,
+      1
+    ],
+    "used_names": [
+      "E16",
+      "hum"
+    ]
+  },
+  "E17": {
+    "name": "love",
+    "frames": [
+      0,
+      1
+    ],
+    "used_names": [
+      "E17",
+      "love"
+    ]
+  },
+  "E18": {
+    "name": "oops",
+    "frames": [
+      0
+    ],
+    "used_names": [
+      "E18",
+      "oops"
+    ]
+  },
+  "E19": {
+    "name": "pain",
+    "frames": [
+      0
+    ],
+    "used_names": [
+      "E19",
+      "pain"
+    ]
+  },
+  "E20": {
+    "name": "troubled",
+    "frames": [
+      0
+    ],
+    "used_names": [
+      "E20",
+      "troubled"
+    ]
+  },
+  "E21": {
+    "name": "qBlue",
+    "frames": [
+      0
+    ],
+    "used_names": [
+      "E21",
+      "qBlue"
+    ]
+  },
+  "E22": {
+    "name": "shine",
+    "frames": [
+      0
+    ],
+    "used_names": [
+      "E22",
+      "shine"
+    ]
+  },
+  "E23": {
+    "name": "stunned",
+    "frames": [
+      0
+    ],
+    "used_names": [
+      "E23",
+      "stunned"
+    ]
+  },
+  "E24": {
+    "name": "vomit",
+    "frames": [
+      0,
+      1
+    ],
+    "used_names": [
+      "E24",
+      "vomit"
+    ]
+  },
+  "A00": {
+    "name": "stand1",
+    "used_names": [
+      "A00",
+      "stand",
+      "stand1"
+    ],
+    "frames": [
+      0,
+      1,
+      2
+    ]
+  },
+  "A01": {
+    "name": "stand2",
+    "used_names": [
+      "A01",
+      "stand2"
+    ],
+    "frames": [
+      0,
+      1,
+      2
+    ]
+  },
+  "A02": {
+    "name": "walk1",
+    "used_names": [
+      "A02",
+      "walk",
+      "walk1"
+    ],
+    "frames": [
+      0,
+      1,
+      2,
+      3
+    ]
+  },
+  "A03": {
+    "name": "walk2",
+    "used_names": [
+      "A03",
+      "walk2"
+    ],
+    "frames": [
+      0,
+      1,
+      2,
+      3
+    ]
+  },
+  "A04": {
+    "name": "prone",
+    "used_names": [
+      "A04",
+      "prone"
+    ],
+    "frames": [
+      0
+    ]
+  },
+  "A05": {
+    "name": "fly",
+    "used_names": [
+      "A05",
+      "fly"
+    ],
+    "frames": [
+      0,
+      1
+    ]
+  },
+  "A06": {
+    "name": "jump",
+    "used_names": [
+      "A06",
+      "jump"
+    ],
+    "frames": [
+      0
+    ]
+  },
+  "A07": {
+    "name": "sit",
+    "used_names": [
+      "A07",
+      "sit"
+    ],
+    "frames": [
+      0
+    ]
+  },
+  "A08": {
+    "name": "ladder",
+    "used_names": [
+      "A08",
+      "ladder"
+    ],
+    "frames": [
+      0,
+      1
+    ]
+  },
+  "A09": {
+    "name": "rope",
+    "used_names": [
+      "A09",
+      "rope"
+    ],
+    "frames": [
+      0,
+      1
+    ]
+  },
+  "A10": {
+    "name": "heal",
+    "used_names": [
+      "A10",
+      "heal"
+    ],
+    "frames": [
+      0,
+      1,
+      2
+    ]
+  },
+  "A11": {
+    "name": "alert",
+    "used_names": [
+      "A11",
+      "alert"
+    ],
+    "frames": [
+      0,
+      1,
+      2
+    ]
+  },
+  "A12": {
+    "name": "proneStab",
+    "used_names": [
+      "A12",
+      "proneStab"
+    ],
+    "frames": [
+      0,
+      1
+    ]
+  },
+  "A13": {
+    "name": "swingO1",
+    "used_names": [
+      "A13",
+      "swingO1"
+    ],
+    "frames": [
+      0,
+      1,
+      2
+    ]
+  },
+  "A14": {
+    "name": "swingO2",
+    "used_names": [
+      "A14",
+      "swingO2"
+    ],
+    "frames": [
+      0,
+      1,
+      2
+    ]
+  },
+  "A15": {
+    "name": "swingO3",
+    "used_names": [
+      "A15",
+      "swingO3"
+    ],
+    "frames": [
+      0,
+      1,
+      2
+    ]
+  },
+  "A16": {
+    "name": "swingOF",
+    "used_names": [
+      "A16",
+      "swingOF"
+    ],
+    "frames": [
+      0,
+      1,
+      2,
+      3
+    ]
+  },
+  "A17": {
+    "name": "swingP1",
+    "used_names": [
+      "A17",
+      "swingP1"
+    ],
+    "frames": [
+      0,
+      1,
+      2
+    ]
+  },
+  "A18": {
+    "name": "swingP2",
+    "used_names": [
+      "A18",
+      "swingP2"
+    ],
+    "frames": [
+      0,
+      1,
+      2
+    ]
+  },
+  "A19": {
+    "name": "swingPF",
+    "used_names": [
+      "A19",
+      "swingPF"
+    ],
+    "frames": [
+      0,
+      1,
+      2,
+      3
+    ]
+  },
+  "A20": {
+    "name": "swingT1",
+    "used_names": [
+      "A20",
+      "swingT1"
+    ],
+    "frames": [
+      0,
+      1,
+      2
+    ]
+  },
+  "A21": {
+    "name": "swingT2",
+    "used_names": [
+      "A21",
+      "swingT2"
+    ],
+    "frames": [
+      0,
+      1,
+      2
+    ]
+  },
+  "A22": {
+    "name": "swingT3",
+    "used_names": [
+      "A22",
+      "swingT3"
+    ],
+    "frames": [
+      0,
+      1,
+      2
+    ]
+  },
+  "A23": {
+    "name": "swingTF",
+    "used_names": [
+      "A23",
+      "swingTF"
+    ],
+    "frames": [
+      0,
+      1,
+      2,
+      3
+    ]
+  },
+  "A24": {
+    "name": "stabO1",
+    "used_names": [
+      "A24",
+      "stabO1"
+    ],
+    "frames": [
+      0,
+      1
+    ]
+  },
+  "A25": {
+    "name": "stabO2",
+    "used_names": [
+      "A25",
+      "stabO2"
+    ],
+    "frames": [
+      0,
+      1
+    ]
+  },
+  "A26": {
+    "name": "stabOF",
+    "used_names": [
+      "A26",
+      "stabOF"
+    ],
+    "frames": [
+      0,
+      1,
+      2
+    ]
+  },
+  "A27": {
+    "name": "stabT1",
+    "used_names": [
+      "A27",
+      "stabT1"
+    ],
+    "frames": [
+      0,
+      1,
+      2
+    ]
+  },
+  "A28": {
+    "name": "stabT2",
+    "used_names": [
+      "A28",
+      "stabT2"
+    ],
+    "frames": [
+      0,
+      1,
+      2
+    ]
+  },
+  "A29": {
+    "name": "stabTF",
+    "used_names": [
+      "A29",
+      "stabTF"
+    ],
+    "frames": [
+      0,
+      1,
+      2,
+      3
+    ]
+  },
+  "A30": {
+    "name": "shoot1",
+    "used_names": [
+      "A30",
+      "shoot1"
+    ],
+    "frames": [
+      0,
+      1,
+      2
+    ]
+  },
+  "A31": {
+    "name": "shoot2",
+    "used_names": [
+      "A31",
+      "shoot2"
+    ],
+    "frames": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ]
+  },
+  "A32": {
+    "name": "shootF",
+    "used_names": [
+      "A32",
+      "shootF"
+    ],
+    "frames": [
+      0,
+      1,
+      2
+    ]
+  },
+  "A33": {
+    "name": "dead",
+    "used_names": [
+      "A33",
+      "dead"
+    ],
+    "frames": [
+      0
+    ]
+  },
+  "A34": {
+    "name": "ghostwalk",
+    "used_names": [
+      "A34",
+      "ghostwalk"
+    ],
+    "frames": [
+      0,
+      1,
+      2,
+      3
+    ]
+  },
+  "A35": {
+    "name": "ghoststand",
+    "used_names": [
+      "A35",
+      "ghoststand"
+    ],
+    "frames": [
+      0,
+      1,
+      2
+    ]
+  },
+  "A36": {
+    "name": "ghostjump",
+    "used_names": [
+      "A36",
+      "ghostjump"
+    ],
+    "frames": [
+      0
+    ]
+  },
+  "A37": {
+    "name": "ghostproneStab",
+    "used_names": [
+      "A37",
+      "ghostproneStab"
+    ],
+    "frames": [
+      0,
+      1
+    ]
+  },
+  "A38": {
+    "name": "ghostladder",
+    "used_names": [
+      "A38",
+      "ghostladder"
+    ],
+    "frames": [
+      0,
+      1
+    ]
+  },
+  "A39": {
+    "name": "ghostrope",
+    "used_names": [
+      "A39",
+      "ghostrope"
+    ],
+    "frames": [
+      0,
+      1
+    ]
+  },
+  "A40": {
+    "name": "ghostfly",
+    "used_names": [
+      "A40",
+      "ghostfly"
+    ],
+    "frames": [
+      0,
+      1
+    ]
+  },
+  "A41": {
+    "name": "ghostsit",
+    "used_names": [
+      "A41",
+      "ghostsit"
+    ],
+    "frames": [
+      0
+    ]
+  },
+    "W00": {
+    "name": "default",
+    "used_names": [
+      "W00"
+    ]
+  },
+  "W01": {
+    "name": "One-handed",
+    "used_names": [
+      "W01",
+      "One-handed",
+      "1h",
+      "1handed"
+    ]
+  },
+  "W02": {
+    "name": "Two-handed",
+    "used_names": [
+      "W02",
+      "Two-handed",
+      "2h",
+      "2handed"
+    ]
+  },
+  "W03": {
+    "name": "Gun",
+    "used_names": [
+      "W03",
+      "gun"
+    ]
+  },
+  "W04": {
+    "name": "No",
+    "used_names": [
+      "W04",
+      "none"
+    ]
+  }
+}
