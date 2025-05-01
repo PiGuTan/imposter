@@ -34,4 +34,4 @@ class Character_Image:
                        loop=0, disposal=2)
 
         io_byte = io_byte.getvalue()
-        return io_byte #what format does discord use?
+        return io_byte

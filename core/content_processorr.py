@@ -62,6 +62,9 @@ def pre_process_content(content:str):
         return split_string[0], []
     return split_string[0], split_string[1:]
 
+def parse_file_name(content:str,param:str):
+    return f"{content}_{param[1:]}.gif"
+
 def process_split_string(split_strings: list[str]):
     a_frames = None
     e_frames = None

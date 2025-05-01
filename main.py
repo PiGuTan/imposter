@@ -54,7 +54,8 @@ async def on_message(message):
     image = Character_Image(output,params=param)
     image.get_images(a_frames=a_frames, e_frames=e_frames) # a_frame, e_frame passed as none
     output_bytes = image.process_image()
-    await message.channel.send(file=discord.File(io.BytesIO(output_bytes), filename=f"{content}.gif"))
+    file_name = content_processorr.parse_file_name(content,param)
+    await message.channel.send(file=discord.File(io.BytesIO(output_bytes), filename=file_name))
 
     await bot.process_commands(message)
 
