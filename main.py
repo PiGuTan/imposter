@@ -40,11 +40,6 @@ async def on_message(message):
     if is_guild_message:
         await message.delete()
 
-    # single frames
-    #output = Character(content).image_url # TODO: this doesnt process content maybe add a middleware?
-    # await message.channel.send(output) #send content
-
-    # multiple frames
     content, command = content_processorr.pre_process_content(content)
     output = Character(content).image_url
     if not command:
