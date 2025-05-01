@@ -47,6 +47,9 @@ async def on_message(message):
     # multiple frames
     content, command = content_processorr.pre_process_content(content)
     output = Character(content).image_url
+    if not command:
+        await message.channel.send(content=output)
+        return
     param, a_frames, e_frames = content_processorr.process_split_string(command)
     image = Character_Image(output,params=param)
     image.get_images(a_frames=a_frames, e_frames=e_frames) # a_frame, e_frame passed as none
