@@ -1,7 +1,7 @@
 import client
 
 class Character:
-    def __init__(self, character_name, date = None):
+    def __init__(self, character_name:str, date = None):
         self.character_name = character_name
         self.date = date
         self.data_agent = client.Data_Agent(character_name, date=date)

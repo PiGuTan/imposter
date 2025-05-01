@@ -47,10 +47,9 @@ async def on_message(message):
     # multiple frames
     content, command = content_processorr.pre_process_content(content)
     output = Character(content).image_url
-    a_frames = [0, 1, 2, 0, 1, 2]
-    e_frames = [0, 1, 0, 1, 0, 1]
-    image = Character_Image(output, command)
-    image.get_images(a_frames=a_frames, e_frames=e_frames)
+    param, a_frames, e_frames = content_processorr.process_split_string(command)
+    image = Character_Image(output,params=param)
+    image.get_images(a_frames=a_frames, e_frames=e_frames) # a_frame, e_frame passed as none
     output_bytes = image.process_image()
     await message.channel.send(file=discord.File(io.BytesIO(output_bytes), filename=f"{content}.gif"))
 

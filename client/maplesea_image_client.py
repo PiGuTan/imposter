@@ -1,33 +1,21 @@
 import requests
+import logging
 
 class Image_Client:
-    def __init__(self, url, params:str=None):
+    def __init__(self, url, params:str=""):
         self.url = url
         self.params = params
         self.images = []
         self.cached_images: {tuple:object} = {}
+        logging.info(f"params: {params}")
 
 
-    def _call_openapi(self, params:str=None):
+    def _call_openapi(self, params:str=""):
         if not self.url:
             return None
 
-        """
-        sample param (not processed here)
-        {
-            "action": "heal", # A10 (0~2 frame)
-            "emption": "hot", # E15 (0~1 frame)
-            "weapon": "gun", # W03
-            "width": "",
-            "height": "",
-            "x": "",
-            "y": "",
-        }
-        self.param will be "action=A10.{a_frame}&emotion=E15.{e_frame}&wmotion=W03
-        """
-
-        response = requests.request("GET", self.url, params=params)
-        return response.content # is this correct?
+        response = requests.request("GET", self.url + params)
+        return response.content
 
     def _call_openapi_with_cache(self,params:str=None, a_frame:int=0, e_frame:int=0):
         if (a_frame, e_frame) in self.cached_images:
@@ -42,6 +30,10 @@ class Image_Client:
             a_frames = [0]
         if e_frames is None:
             e_frames = [0]
+        if len(a_frames) != len(e_frames):
+            # make both frame length equal
+            a_frames *= len(e_frames)
+            e_frames *= len(a_frames)
         images = []
         for a_frame,e_frame in zip(a_frames,e_frames):
             params = self.params.format(a_frame=a_frame, e_frame=e_frame)

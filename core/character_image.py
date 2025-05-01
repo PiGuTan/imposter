@@ -5,25 +5,19 @@ from PIL import Image
 import io
 
 class Character_Image:
-    def __init__(self, url:str ,commands:str=""):
+    def __init__(self, url:str ,commands:str="", params:str=""):
         self.commands = commands.split(" ")
         self.url = url
 
-        self._params = ""
+        self.params = params
 
         self.image_client = None
         self.images_data = []
         self.image_gif = []
 
-    def parse_params(self):
-        self.params = "action=A10.{a_frame}&emotion=E15.{e_frame}&wmotion=W03"
-
-        pass # TODO: figure out how to go from command to params
-
     def get_images(self, a_frames=None, e_frames=None):
         if len(self.images_data) > 0:
             return
-        self.parse_params()
         self.image_client = Image_Client(self.url, self.params)
         self.images_data = self.image_client.get_images(a_frames=a_frames, e_frames=e_frames)
 
