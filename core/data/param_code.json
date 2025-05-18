@@ -26,7 +26,8 @@
     ],
     "used_names": [
       "E02",
-      "smile"
+      "smile",
+      "f2"
     ]
   },
   "E03": {
@@ -36,7 +37,8 @@
     ],
     "used_names": [
       "E03",
-      "cry"
+      "cry",
+      "f4"
     ]
   },
   "E04": {
@@ -46,7 +48,8 @@
     ],
     "used_names": [
       "E04",
-      "angry"
+      "angry",
+      "f5"
     ]
   },
   "E05": {
@@ -56,7 +59,8 @@
     ],
     "used_names": [
       "E05",
-      "bewildered"
+      "bewildered",
+      "f6"
     ]
   },
   "E06": {
@@ -79,7 +83,8 @@
     ],
     "used_names": [
       "E07",
-      "blaze"
+      "blaze",
+      "flaming"
     ]
   },
   "E08": {
@@ -90,7 +95,9 @@
     ],
     "used_names": [
       "E08",
-      "bowing"
+      "bowing",
+      "zzz",
+      "drool"
     ]
   },
   "E09": {
@@ -100,7 +107,8 @@
     ],
     "used_names": [
       "E09",
-      "cheers"
+      "cheers",
+      "sweetness"
     ]
   },
   "E10": {
@@ -110,7 +118,8 @@
     ],
     "used_names": [
       "E10",
-      "chu"
+      "chu",
+      "smoochies"
     ]
   },
   "E11": {
@@ -153,7 +162,8 @@
     ],
     "used_names": [
       "E14",
-      "hit"
+      "hit",
+      "f1"
     ]
   },
   "E15": {
@@ -175,7 +185,8 @@
     ],
     "used_names": [
       "E16",
-      "hum"
+      "hum",
+      "sigh"
     ]
   },
   "E17": {
@@ -206,7 +217,8 @@
     ],
     "used_names": [
       "E19",
-      "pain"
+      "pain",
+      "ouch"
     ]
   },
   "E20": {
@@ -216,7 +228,8 @@
     ],
     "used_names": [
       "E20",
-      "troubled"
+      "troubled",
+      "f3"
     ]
   },
   "E21": {
@@ -226,7 +239,8 @@
     ],
     "used_names": [
       "E21",
-      "qBlue"
+      "qBlue",
+      "f7"
     ]
   },
   "E22": {
@@ -236,7 +250,8 @@
     ],
     "used_names": [
       "E22",
-      "shine"
+      "shine",
+      "ray"
     ]
   },
   "E23": {
@@ -257,14 +272,14 @@
     ],
     "used_names": [
       "E24",
-      "vomit"
+      "vomit",
+      "queasy"
     ]
   },
   "A00": {
     "name": "stand1",
     "used_names": [
       "A00",
-      "stand",
       "stand1"
     ],
     "frames": [
@@ -277,6 +292,7 @@
     "name": "stand2",
     "used_names": [
       "A01",
+      "stand",
       "stand2"
     ],
     "frames": [
@@ -326,6 +342,7 @@
     "name": "fly",
     "used_names": [
       "A05",
+      "float",
       "fly"
     ],
     "frames": [
@@ -357,6 +374,7 @@
     "name": "ladder",
     "used_names": [
       "A08",
+      "climb",
       "ladder"
     ],
     "frames": [
@@ -414,6 +432,7 @@
     "name": "swingO1",
     "used_names": [
       "A13",
+      "swing",
       "swingO1"
     ],
     "frames": [
@@ -549,6 +568,7 @@
     "name": "stabO1",
     "used_names": [
       "A24",
+      "stab",
       "stabO1"
     ],
     "frames": [
@@ -681,6 +701,7 @@
     "name": "ghoststand",
     "used_names": [
       "A35",
+      "ghost",
       "ghoststand"
     ],
     "frames": [
