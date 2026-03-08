@@ -49,6 +49,8 @@ async def hello(interaction: discord.Interaction):
     await interaction.response.send_message(f"Hello {interaction.user.mention}!")
 
 @client.tree.command(name="copy", description="imitates a users character with an action and expression")
+@discord.app_commands.allowed_installs(guilds=True, users=True)
+@discord.app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
 async def copy(interaction: discord.Interaction, ign:str,action:str=None,expression:str=None):
     log_extra = {
         "interaction_id": interaction.id,
