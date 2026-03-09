@@ -1,11 +1,9 @@
 import discord
-from discord.ext import commands
 import logging
-from dotenv import load_dotenv
 import os
 import io
+import asyncio
 
-import ctypes
 from discord.ext import commands
 from dotenv import load_dotenv
 
@@ -44,9 +42,42 @@ async def on_ready():
     activity = discord.Activity(type=discord.ActivityType.watching, name="/hello")
     await client.change_presence(status=discord.Status.online, activity=activity)
 
-@client.tree.command(name="hello", description="Say hello and tagging user")
+@client.tree.command(name="hello", description="Say hello and tagging yourself")
 async def hello(interaction: discord.Interaction):
-    await interaction.response.send_message(f"Hello {interaction.user.mention}!")
+    log_extra = {
+        "interaction_id": interaction.id,
+        "command": "hello",
+        "result": "-"
+    }
+    bot_logger.info(f"{interaction.user.id}",extra={**log_extra})
+    await interaction.response.defer(thinking=False)
+    user = await client.fetch_user(interaction.user.id)
+    try:
+        if not user:
+            bot_logger.error(f"{interaction.user.id} not logged in",extra={**log_extra, "result":"auth_error"})
+            await interaction.followup.send("Are you human?")
+        await user.send(f"Hello {interaction.user.name}")
+
+        with open(r"templates/hello_template.txt", 'r') as file:
+            for line in file:
+                await asyncio.sleep(1)
+                await user.send(line.strip())
+        await asyncio.sleep(1)
+        await interaction.followup.send(f"Hihi {interaction.user.mention}, I have sent you some pms <3")
+    except Exception as e:
+        bot_logger.error(f"imposter shot circuited with error\n{e}",extra={**log_extra, "result":"error"})
+
+@client.tree.command(name="preview", description="shows what the bot can do")
+@discord.app_commands.allowed_installs(guilds=False, users=True)
+@discord.app_commands.allowed_contexts(guilds=False, dms=True, private_channels=False)
+async def preview(interaction: discord.Interaction):
+    log_extra = {
+        "interaction_id": interaction.id,
+        "command": "preview",
+        "result": "-"
+    }
+    bot_logger.info(f"{interaction.user.id}",extra={**log_extra})
+    await interaction.response.send_message(r"https://github.com/PiGuTan/imposter/blob/main/previews/character_param_preview.gif")
 
 @client.tree.command(name="copy", description="imitates a users character with an action and expression")
 @discord.app_commands.allowed_installs(guilds=True, users=True)
