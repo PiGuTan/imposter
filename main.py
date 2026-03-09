@@ -77,7 +77,7 @@ async def preview(interaction: discord.Interaction):
         "result": "-"
     }
     bot_logger.info(f"{interaction.user.id}",extra={**log_extra})
-    await interaction.response.send_message(r"https://github.com/PiGuTan/imposter/blob/main/previews/character_param_preview.gif")
+    await interaction.response.send_message(r"https://github.com/PiGuTan/imposter/blob/main/previews/character_param_preview.gif?raw=true")
 
 @client.tree.command(name="copy", description="imitates a users character with an action and expression")
 @discord.app_commands.allowed_installs(guilds=True, users=True)
