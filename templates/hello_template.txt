@@ -1,4 +1,18 @@
-test message
-12345
-**some formatting**
-`sadjkl`adaa
+**Identity theft has never been this easy.**
+
+I'm **Imposter**, your MapleSea character mimic.
+
+**How to use me:**
+
+- **The Look**: `/copy [in-game-name]`
+
+- **The Vibe**: Add an `action` and `expression` to the command.
+
+**No idea what to act:question:**
+Use `/preview` to see all available animations and faces.
+
+**Beyond my looks:performing_arts:**
+There's more to me than my pretty face. Use the slash command `/` to browse my abilities.
+
+**Also**
+$20 per imitation
