@@ -55,15 +55,21 @@ async def hello(interaction: discord.Interaction):
     try:
         if not user:
             bot_logger.error(f"{interaction.user.id} not logged in",extra={**log_extra, "result":"auth_error"})
-            await interaction.followup.send("Are you human?")
-        await user.send(f"Hello {interaction.user.name}")
+            await interaction.followup.send("Is that human?")
 
         with open(r"templates/hello_template.txt", 'r') as file:
             for line in file:
-                await asyncio.sleep(1)
-                await user.send(line.strip())
+                await asyncio.sleep(len(line) * 0.05 + .5)
+                line = line.strip()
+                if line == "":
+                    continue
+                await user.send(line)
         await asyncio.sleep(1)
-        await interaction.followup.send(f"Hihi {interaction.user.mention}, I have sent you some pms <3")
+        file.close()
+        if interaction.guild:
+            await interaction.followup.send(f"Hihi {interaction.user.mention}, I have sent you some pms <3")
+        else:
+            await interaction.delete_original_response()
     except Exception as e:
         bot_logger.error(f"imposter shot circuited with error\n{e}",extra={**log_extra, "result":"error"})
 
