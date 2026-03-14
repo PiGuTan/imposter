@@ -104,6 +104,4 @@ async def copy(interaction: discord.Interaction, ign:str,action:str=None,express
                              result="error")
         await interaction.followup.send(f"imposter shot circuited with error\n{e}")
 
-import logging
-
-client.run(token, log_handler=util.handler, log_level=logging.DEBUG)
+client.run(token, **util.discord_logging_kwarg)

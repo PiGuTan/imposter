@@ -1,4 +1,4 @@
 from .logger import Logger
-from .logger import handler
+from .logger import discord_logging_kwarg
 
 bot_logger = Logger()

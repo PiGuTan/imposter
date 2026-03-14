@@ -1,8 +1,10 @@
 import logging
 from discord import Interaction
 
-discord_logging_kwarg = logging.FileHandler(filename='discord.log', encoding='utf-8', mode='w')
-
+discord_logging_kwarg = {
+    "log_handler": logging.FileHandler(filename='discord.log', encoding='utf-8', mode='w'),
+    "log_level":logging.DEBUG
+}
 class Logger:
     def __init__(self):
         self.bot_logger = logging.getLogger('bot_actions')
