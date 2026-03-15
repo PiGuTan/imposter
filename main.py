@@ -96,4 +96,7 @@ async def copy(interaction: discord.Interaction, ign:str,action:str=None,express
                              result="error")
         await interaction.followup.send(f"imposter shot circuited with error\n{e}")
 
-client.run(token, **util.discord_logging_kwarg)
+try:
+    client.run(token, **util.discord_logging_kwarg)
+except KeyboardInterrupt:
+    pass
