@@ -25,7 +25,7 @@ class Character_Image:
     def process_image(self, a_frames=None, e_frames=None):
         self.get_images(a_frames=a_frames, e_frames=e_frames)
         if len(self.images_data) == 0:
-            logging.error("No images found with {self.url}", self.url)
+            logging.error(f"No images found with {self.url}", self.url)
         images = [Image.open(io.BytesIO(i)) for i in self.images_data]
         io_byte = io.BytesIO()
         images[0].save(io_byte,

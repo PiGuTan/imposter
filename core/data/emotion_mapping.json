@@ -2,6 +2,7 @@
   "default": ["E00"],
   "wink": ["E01"],
   "smile": ["E02"],
+  "happy": ["E02"],
   "cry": ["E03"],
   "angry": ["E04"],
   "bewildered": ["E05"],

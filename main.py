@@ -88,8 +88,7 @@ async def copy(interaction: discord.Interaction, ign:str,action:str=None,express
 
         image = Character_Image(image_url,params=param)
 
-        image.get_images(a_frames=a_frames, e_frames=e_frames) # a_frame, e_frame passed as none
-        output_bytes = image.process_image()
+        output_bytes = image.process_image(a_frames=a_frames, e_frames=e_frames)
         file_name = content_processorr.parse_file_name(ign,param)
         util.bot_logger.info("", interaction=interaction,
                              result="success")
