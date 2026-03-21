@@ -3,6 +3,8 @@ import re
 import spacy
 from thefuzz import process
 from random import choice as random_choice
+from dataclasses import dataclass, field
+from typing import List, Optional, Dict
 
 # Load NLP once globally
 nlp = spacy.load("en_core_web_sm")
@@ -12,9 +14,9 @@ CODE_PATTERN = r"^[A-Z]\d{2}$"
 
 class StaticData:
     def __init__(self):
-        self._action_mapping = {}
-        self._emotion_mapping = {}
-        self._frame_mapping = {}
+        self._action_mapping: {str:[str]} = {}
+        self._emotion_mapping: {str:[str]} = {}
+        self._frame_mapping: {str:[int]} = {}
 
     def load_all(self):
         """Helper to load all JSON files at once"""
@@ -36,11 +38,8 @@ class StaticData:
         return self._frame_mapping
 
     def get_action_mapping(self):
-        try:
-            with open("core/data/action_mapping.json", "r", encoding="utf-8") as f:
-                self._action_mapping = json.load(f)
-        except FileNotFoundError:
-            self._action_mapping = {}
+        with open("core/data/action_mapping.json", "r", encoding="utf-8") as f:
+            self._action_mapping = json.load(f)
 
     @property
     def action_mapping(self):
@@ -49,11 +48,8 @@ class StaticData:
         return self._action_mapping
 
     def get_emotion_mapping(self):
-        try:
-            with open("core/data/emotion_mapping.json", "r", encoding="utf-8") as f:
-                self._emotion_mapping = json.load(f)
-        except FileNotFoundError:
-            self._emotion_mapping = {}
+        with open("core/data/emotion_mapping.json", "r", encoding="utf-8") as f:
+            self._emotion_mapping = json.load(f)
 
     @property
     def emotion_mapping(self):
@@ -107,44 +103,60 @@ def _get_single_param_code(input_str, mapping, threshold=75):
     return choice, debug_list
 
 
+@dataclass
 class Params:
-    def __init__(self):
-        self.action = None
-        self.emotion = None
-        self.a_frames = None
-        self.e_frames = None
-        self.debugs = {}
+    # Basic attributes with types
+    action: Optional[str] = None
+    emotion: Optional[str] = None
+
+    # Lists require a default_factory to avoid mutable default errors
+    a_frames: List[int] = field(default_factory=list)
+    e_frames: List[int] = field(default_factory=list)
+
+    # Dictionary for debugging logs
+    debugs: Dict[str, List[str]] = field(default_factory=dict)
 
     @property
-    def param_str(self):
-        parts = []
+    def param_str(self) -> str:
+        str_list = []
         if self.action:
-            parts.append(f"action={self.action}.{{a_frame}}")
+            str_list.append(f"action={self.action}.{{a_frame}}")
         if self.emotion:
-            parts.append(f"emotion={self.emotion}.{{e_frame}}")
-        return "?" + "&".join(parts) if parts else ""
+            str_list.append(f"emotion={self.emotion}.{{e_frame}}")
+
+        return "?" + "&".join(str_list) if str_list else ""
 
 
 class ParamBuilder:
     def __init__(self):
-        self.params = Params()
+        self.params: Params = Params()
 
-    def build_action(self, user_input):
+    def build_action(self, user_input: str) -> "ParamBuilder":
         choice, debug = _get_single_param_code(user_input, static_data.action_mapping)
+
         if choice:
             self.params.action = choice
-            # Check frame mapping
-            self.params.a_frames = static_data.frame_mapping.get(choice, [0])
+            # Using .get() ensures we don't crash if the code is missing in frame_data
+            self.params.a_frames = static_data.frame_mapping.get(choice, [])
+
         self.params.debugs["action"] = debug
         return self
 
-    def build_emotion(self, user_input):
+    def build_emotion(self, user_input: str) -> "ParamBuilder":
         choice, debug = _get_single_param_code(user_input, static_data.emotion_mapping)
+
         if choice:
             self.params.emotion = choice
-            self.params.e_frames = static_data.frame_mapping.get(choice, [0])
+            self.params.e_frames = static_data.frame_mapping.get(choice, [])
+
         self.params.debugs["emotion"] = debug
         return self
 
-    def compile(self):
-        return self.params.param_str, self.params.a_frames, self.params.e_frames, self.params.debugs
+    def compile_params(self):
+        # Returns the final state for the API or Controller
+        return (
+            self.params.param_str,
+            self.params.a_frames,
+            self.params.e_frames,
+            self.params.debugs
+        )
