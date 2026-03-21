@@ -1,0 +1,5 @@
+{
+    "happy": ["E01"], "joy": ["E01"], "glad": ["E01"],
+    "sad": ["E02"], "blue": ["E02"], "unhappy": ["E02"],
+    "angry": ["E03"], "mad": ["E03"], "furious": ["E03"]
+}

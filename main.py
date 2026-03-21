@@ -85,6 +85,7 @@ async def copy(interaction: discord.Interaction, ign:str,action:str=None,express
         content = [i for i in (action,expression) if i is not None]
         param, a_frames, e_frames = content_processorr.process_split_string(content)
         image = Character_Image(image_url,params=param)
+
         image.get_images(a_frames=a_frames, e_frames=e_frames) # a_frame, e_frame passed as none
         output_bytes = image.process_image()
         file_name = content_processorr.parse_file_name(content,param)
@@ -93,6 +94,44 @@ async def copy(interaction: discord.Interaction, ign:str,action:str=None,express
         await interaction.followup.send(file=discord.File(io.BytesIO(output_bytes), filename=file_name))
     except Exception as e:
         util.bot_logger.error(f"error={e}", interaction=interaction,
+                             result="error")
+        await interaction.followup.send(f"imposter shot circuited with error\n{e}")
+
+@client.tree.command(name="copy_new", description="imitates a users character with an action and expression")
+@discord.app_commands.allowed_installs(guilds=True, users=True)
+@discord.app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
+async def copy_new(interaction: discord.Interaction, ign:str,action:str=None,expression:str=None):
+    util.bot_logger.info(f"ign={ign}, action={action}, expression={expression}", interaction=interaction, result="receive")
+    await interaction.response.defer(thinking=True)
+
+    image_url = Character(ign).image_url
+    if not image_url:
+        util.bot_logger.info(f"ign not found ign={ign}", interaction=interaction,
+                             result="error")
+        await interaction.followup.send(f"Who is {ign}:question:")
+        return
+
+    if not (action or expression):
+        util.bot_logger.info(f"no action or expression found", interaction=interaction,
+                             result="success")
+        await interaction.followup.send(content=image_url)
+        return
+    debug = {}
+    try:
+        param, a_frames, e_frames, debug = content_processorr.build_params({"action":action,"expression":expression})
+        util.bot_logger.info(f"{debug}", interaction=interaction,
+                             result="pprocess_params")
+
+        image = Character_Image(image_url,params=param)
+
+        image.get_images(a_frames=a_frames, e_frames=e_frames) # a_frame, e_frame passed as none
+        output_bytes = image.process_image()
+        file_name = content_processorr.parse_file_name(ign,param)
+        util.bot_logger.info("", interaction=interaction,
+                             result="success")
+        await interaction.followup.send(file=discord.File(io.BytesIO(output_bytes), filename=file_name))
+    except Exception as e:
+        util.bot_logger.error(f"error={e}, debug={debug}", interaction=interaction,
                              result="error")
         await interaction.followup.send(f"imposter shot circuited with error\n{e}")
 
