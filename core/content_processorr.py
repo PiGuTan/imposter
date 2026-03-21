@@ -1,26 +1,33 @@
 import json
-import copy
-
-import spacy
 import re
+import spacy
 from thefuzz import process
 from random import choice as random_choice
 
+# Load NLP once globally
 nlp = spacy.load("en_core_web_sm")
 
 CODE_PATTERN = r"^[A-Z]\d{2}$"
 
-class Static_Data:
+
+class StaticData:
     def __init__(self):
-        self._action_mapping: {str:[str]} = {}
-        self._emotion_mapping: {str:[str]} = {}
-        self._frame_mapping: {str:[int]} = {}
+        self._action_mapping = {}
+        self._emotion_mapping = {}
+        self._frame_mapping = {}
+
+    def load_all(self):
+        """Helper to load all JSON files at once"""
+        self.get_action_mapping()
+        self.get_emotion_mapping()
+        self.get_frame_mapping()
 
     def get_frame_mapping(self):
-        with open("core/data/frame_data.json", "r", encoding="utf-8") as f:
-            data = json.load(f)
-            f.close()
-        self._frame_mapping = data
+        try:
+            with open("core/data/frame_data.json", "r", encoding="utf-8") as f:
+                self._frame_mapping = json.load(f)
+        except FileNotFoundError:
+            self._frame_mapping = {}
 
     @property
     def frame_mapping(self):
@@ -29,10 +36,11 @@ class Static_Data:
         return self._frame_mapping
 
     def get_action_mapping(self):
-        with open("core/data/action_mapping.json", "r", encoding="utf-8") as f:
-            data = json.load(f)
-            f.close()
-        self._action_mapping = data
+        try:
+            with open("core/data/action_mapping.json", "r", encoding="utf-8") as f:
+                self._action_mapping = json.load(f)
+        except FileNotFoundError:
+            self._action_mapping = {}
 
     @property
     def action_mapping(self):
@@ -41,10 +49,11 @@ class Static_Data:
         return self._action_mapping
 
     def get_emotion_mapping(self):
-        with open("core/data/emotion_mapping.json", "r", encoding="utf-8") as f:
-            data = json.load(f)
-            f.close()
-        self._emotion_mapping = data
+        try:
+            with open("core/data/emotion_mapping.json", "r", encoding="utf-8") as f:
+                self._emotion_mapping = json.load(f)
+        except FileNotFoundError:
+            self._emotion_mapping = {}
 
     @property
     def emotion_mapping(self):
@@ -52,129 +61,90 @@ class Static_Data:
             self.get_emotion_mapping()
         return self._emotion_mapping
 
-static_data = Static_Data()
-static_data.get_param_code_data()
 
-def pre_process_content(content:str):
-    content = content.strip()
-    split_string = content.split(" ")
-    if len(split_string) == 1:
-        return split_string[0], []
-    return split_string[0], split_string[1:]
+# Initialize static data
+static_data = StaticData()
+static_data.load_all()
 
-def parse_file_name(content:str,param:str):
-    return f"{content}_{param[1:]}.gif"
 
-def _get_code(user_input, mapping, threshold=75) -> ([str],str):
-    """
-    generic method to get list of param code based on user input
-    TO USE the function get_action_code and get_emotion_code instead
-    :param user_input:
-    :param mapping: one of the static data dictionaries e.g. static_data.action_mapping
-    :param threshold:
-    :return: list of possible param codes e.g. [A01 , A02] and its debug message
-    """
+def _get_code(user_input, mapping, threshold=75):
     raw_upper = str(user_input).strip().upper()
     clean_lower = raw_upper.lower()
-    try:
-        if not clean_lower:
-            return None, f"input {user_input} is None after lowercase"
 
-        # Regex Check
-        if re.match(CODE_PATTERN, raw_upper): # TODO: remove and put as static data to handle F1 F2 etc
-            return [raw_upper], f"matched as param code"
+    if not clean_lower:
+        return None, f"Input '{user_input}' resulted in empty string"
 
-        # Lemmatization (Grammar Check)
-        doc = nlp(clean_lower)
-        lemma = doc[0].lemma_
+    # 1. Regex Check (Direct Code)
+    if re.match(CODE_PATTERN, raw_upper):
+        return [raw_upper], "Matched as direct param code"
 
-        # Direct Lookup
-        if lemma in mapping:
-            return mapping[lemma], f"matched `{user_input}` with `{mapping[lemma]}` during direct lookup"
+    # 2. Lemmatization
+    doc = nlp(clean_lower)
+    lemma = doc[0].lemma_
 
-        # Fuzzy Lookup
-        best_match, score = process.extractOne(lemma, mapping.keys())
+    # 3. Direct Lookup
+    if lemma in mapping:
+        return mapping[lemma], f"Direct match: '{lemma}'"
 
-        if score >= threshold:
-            return mapping[best_match], f"matched `{user_input}` with `{best_match}` during fuzzy lookup"
-        return None, f"input `{user_input}` not matched to static data"
+    # 4. Fuzzy Lookup
+    best_match, score = process.extractOne(lemma, mapping.keys())
+    if score >= threshold:
+        return mapping[best_match], f"Fuzzy match: '{best_match}' (score: {score})"
 
-    except Exception as e:
-        return None, str(e)
+    return None, f"No match found for '{user_input}'"
 
-def _get_single_param_code(input:str,static_data_mapping:dict,threshold=75):
+
+def _get_single_param_code(input_str, mapping, threshold=75):
     debug_list = []
-    choice_list,debug = _get_code(input, static_data_mapping,threshold)
+    choice_list, debug = _get_code(input_str, mapping, threshold)
     debug_list.append(debug)
-    if not choice_list or choice_list == []:
-        debug_list.append(f"list is empty")
+
+    if not choice_list:
         return None, debug_list
+
     choice = random_choice(choice_list)
-    debug_list.append(f"picked {choice} from {choice_list}")
+    debug_list.append(f"Picked {choice} from {choice_list}")
     return choice, debug_list
 
 
 class Params:
     def __init__(self):
-        self.params = None
-        self.debugs:{str:[str]} = {}
-
-        self.action:str = None
-        self.emotion:str = None
-        self.a_frames:[int] = None
-        self.e_frames:[int] = None
+        self.action = None
+        self.emotion = None
+        self.a_frames = None
+        self.e_frames = None
+        self.debugs = {}
 
     @property
-    def param_str(self) -> str:
-        if not (self.action or self.emotion):
-            self.debugs["parsing"] = "empty action and emotion"
-            return ""
-        str_list = []
+    def param_str(self):
+        parts = []
         if self.action:
-            self.debugs["parsing"] = "handle action"
-            str_list.append(f"action={self.action}.{{a_frame}}")
+            parts.append(f"action={self.action}.{{a_frame}}")
         if self.emotion:
-            self.debugs["parsing"] = "handle emotion"
-            str_list.append(f"emotion={self.emotion}.{{e_frame}}")
-        return "?" + "&".join(str_list)
+            parts.append(f"emotion={self.emotion}.{{e_frame}}")
+        return "?" + "&".join(parts) if parts else ""
+
 
 class ParamBuilder:
     def __init__(self):
-        self.params:Params = Params()
+        self.params = Params()
 
-    def build_action(self,user_input:str):
-        choice, debug = _get_single_param_code(user_input, static_data.action_mapping, threshold=75)
-        if choice and choice in static_data.frame_mapping:
-            self.a_frames = static_data.frame_mapping[choice]
+    def build_action(self, user_input):
+        choice, debug = _get_single_param_code(user_input, static_data.action_mapping)
+        if choice:
             self.params.action = choice
-        else:
-            debug.append(f"choice of action {choice} is invalid")
+            # Check frame mapping
+            self.params.a_frames = static_data.frame_mapping.get(choice, [0])
         self.params.debugs["action"] = debug
         return self
 
-    def build_emotion(self,user_input:str):
-        choice, debug = _get_single_param_code(user_input, static_data.emotion_mapping, threshold=75)
-        if choice and choice in static_data.frame_mapping:
-            self.e_frames = static_data.frame_mapping[choice]
+    def build_emotion(self, user_input):
+        choice, debug = _get_single_param_code(user_input, static_data.emotion_mapping)
+        if choice:
             self.params.emotion = choice
-        else:
-            debug.append(f"choice of emotion {choice} is invalid")
+            self.params.e_frames = static_data.frame_mapping.get(choice, [0])
         self.params.debugs["emotion"] = debug
         return self
-        # implement other param builder here
 
-    def compile_params(self):
-        # returns something like '?action=A13.{a_frame}&emotion=E02.{e_frame}'  [0, 1, 2] [0] with debug
+    def compile(self):
         return self.params.param_str, self.params.a_frames, self.params.e_frames, self.params.debugs
-
-def build_params(user_inputs:{str:str}):
-    param = ParamBuilder()
-    try:
-        if "action" in user_inputs and user_inputs["action"]:
-            param = param.build_action(user_inputs["action"])
-        if "emotion" in user_inputs and user_inputs["emotion"]:
-            param = param.build_emotion(user_inputs["emotion"])
-        return param.compile_params()
-    except Exception as e:
-        param.params.debugs["exception"] = str(e)
-        return None,None,None, param.params.debugs
