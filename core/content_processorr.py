@@ -11,7 +11,6 @@ nlp = spacy.load("en_core_web_sm")
 
 CODE_PATTERN = r"^[A-Z]\d{2}$"
 
-
 class StaticData:
     def __init__(self):
         self._action_mapping: {str:[str]} = {}
@@ -58,7 +57,6 @@ class StaticData:
         return self._emotion_mapping
 
 
-# Initialize static data
 static_data = StaticData()
 static_data.load_all()
 
@@ -160,3 +158,17 @@ class ParamBuilder:
             self.params.e_frames,
             self.params.debugs
         )
+
+def build_params(action=None, emotion=None):
+    builder = ParamBuilder()
+
+    query_string, a_frames, e_frames, debugs = (
+        builder
+        .build_action(action)
+        .build_emotion(emotion)
+        .compile_params()
+    )
+    return query_string, a_frames, e_frames, debugs
+
+def parse_file_name(content:str,param:str):
+    return f"{content}_{param[1:]}.gif"

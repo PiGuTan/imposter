@@ -82,7 +82,7 @@ async def copy(interaction: discord.Interaction, ign:str,action:str=None,express
         return
     debug = {}
     try:
-        param, a_frames, e_frames, debug = content_processorr.build_params({"action":action,"expression":expression})
+        param, a_frames, e_frames, debug = content_processorr.build_params(action=action,emotion=expression)
         util.bot_logger.info(f"{debug}", interaction=interaction,
                              result="pprocess_params")
 
