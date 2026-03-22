@@ -1,5 +1,4 @@
 import json
-import re
 import spacy
 from thefuzz import process
 from random import choice as random_choice
@@ -11,17 +10,25 @@ nlp = spacy.load("en_core_web_sm")
 
 CODE_PATTERN = r"^[A-Z]\d{2}$"
 
+@dataclass
+class Special_mapping:
+    action: dict
+    emotion: dict
+
 class StaticData:
     def __init__(self):
         self._action_mapping: {str:[str]} = {}
         self._emotion_mapping: {str:[str]} = {}
         self._frame_mapping: {str:[int]} = {}
 
+        self._special_mapping: Special_mapping | None = None
+
     def load_all(self):
         """Helper to load all JSON files at once"""
         self.get_action_mapping()
         self.get_emotion_mapping()
         self.get_frame_mapping()
+        self.get_special_mapping()
 
     def get_frame_mapping(self):
         try:
@@ -56,12 +63,22 @@ class StaticData:
             self.get_emotion_mapping()
         return self._emotion_mapping
 
+    def get_special_mapping(self):
+        with open("core/data/special_mapping.json", "r", encoding="utf-8") as f:
+            data = json.load(f)
+            self._special_mapping = Special_mapping(data["action"], data["emotion"])
+
+    def special_mapping(self):
+        if not self._special_mapping:
+            self.get_special_mapping()
+        return self._special_mapping
+
 
 static_data = StaticData()
 static_data.load_all()
 
 
-def _get_code(user_input, mapping, threshold=75):
+def _get_code(user_input, mapping, special_map, threshold=75):
     raw_upper = str(user_input).strip().upper()
     clean_lower = raw_upper.lower()
 
@@ -69,8 +86,9 @@ def _get_code(user_input, mapping, threshold=75):
         return None, f"Input '{user_input}' resulted in empty string"
 
     # 1. Regex Check (Direct Code)
-    if re.match(CODE_PATTERN, raw_upper):
-        return [raw_upper], "Matched as direct param code"
+    if clean_lower in special_map:
+        mapped_code = special_map[clean_lower]
+        return mapped_code, f"Matched {clean_lower} to {mapped_code} as direct param code"
 
     # 2. Lemmatization
     doc = nlp(clean_lower)
@@ -88,9 +106,9 @@ def _get_code(user_input, mapping, threshold=75):
     return None, f"No match found for '{user_input}'"
 
 
-def _get_single_param_code(input_str, mapping, threshold=75):
+def _get_single_param_code(input_str, mapping, special_map, threshold=75):
     debug_list = []
-    choice_list, debug = _get_code(input_str, mapping, threshold)
+    choice_list, debug = _get_code(input_str, mapping, special_map, threshold)
     debug_list.append(debug)
 
     if not choice_list:
@@ -130,7 +148,7 @@ class ParamBuilder:
         self.params: Params = Params()
 
     def build_action(self, user_input: str) -> "ParamBuilder":
-        choice, debug = _get_single_param_code(user_input, static_data.action_mapping)
+        choice, debug = _get_single_param_code(user_input, static_data.action_mapping, static_data.special_mapping.action)
 
         if choice:
             self.params.action = choice
