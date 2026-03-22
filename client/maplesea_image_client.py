@@ -26,9 +26,9 @@ class Image_Client:
         return image
 
     def get_images(self, a_frames=None, e_frames=None):
-        if a_frames is None:
+        if a_frames is None or len(a_frames) < 1:
             a_frames = [0]
-        if e_frames is None:
+        if e_frames is None or len(e_frames) < 1:
             e_frames = [0]
         if len(a_frames) != len(e_frames):
             # make both frame length equal

@@ -80,19 +80,21 @@ async def copy(interaction: discord.Interaction, ign:str,action:str=None,express
                              result="success")
         await interaction.followup.send(content=image_url)
         return
+    debug = {}
     try:
-        # TODO: change to handle two strings instead of a list of two strings
-        content = [i for i in (action,expression) if i is not None]
-        param, a_frames, e_frames = content_processorr.process_split_string(content)
+        param, a_frames, e_frames, debug = content_processorr.build_params(action=action,emotion=expression)
+        util.bot_logger.info(f"{debug}", interaction=interaction,
+                             result="pprocess_params")
+
         image = Character_Image(image_url,params=param)
-        image.get_images(a_frames=a_frames, e_frames=e_frames) # a_frame, e_frame passed as none
-        output_bytes = image.process_image()
-        file_name = content_processorr.parse_file_name(content,param)
+
+        output_bytes = image.process_image(a_frames=a_frames, e_frames=e_frames)
+        file_name = content_processorr.parse_file_name(ign,param)
         util.bot_logger.info("", interaction=interaction,
                              result="success")
         await interaction.followup.send(file=discord.File(io.BytesIO(output_bytes), filename=file_name))
     except Exception as e:
-        util.bot_logger.error(f"error={e}", interaction=interaction,
+        util.bot_logger.error(f"error={e}, debug={debug}", interaction=interaction,
                              result="error")
         await interaction.followup.send(f"imposter shot circuited with error\n{e}")
 

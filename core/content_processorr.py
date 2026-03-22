@@ -1,105 +1,174 @@
 import json
-import copy
+import re
+import spacy
+from thefuzz import process
+from random import choice as random_choice
+from dataclasses import dataclass, field
+from typing import List, Optional, Dict
 
-A_FLAG = 1
-E_FLAG = 2
-W_FLAG = 4
+# Load NLP once globally
+nlp = spacy.load("en_core_web_sm")
 
-class Param_code:
-    def __init__(self,name:str,param_code:str,data:dict):
-        self.name = name
-        self.param_code = param_code
-        self.frames = data["frames"] if "frames" in data else []
-        self.flag = (A_FLAG*(param_code[0] == "A")
-                     + E_FLAG*(param_code[0] == "E")
-                     + W_FLAG*(param_code[0] == "W"))
+CODE_PATTERN = r"^[A-Z]\d{2}$"
 
-    def reset_name(self,name:str):
-        self.name = name
-
-    @property
-    def parsed_param(self):
-        match self.flag:
-            case 1: #for some reason IDE throw warning if use A_FLAG
-                return f"action={self.param_code}"+".{a_frame}" if len(self.frames) else ""
-            case 2:
-                return f"emotion={self.param_code}"+".{e_frame}" if len(self.frames) else ""
-            case 4:
-                return f"wmotion={self.param_code}"+""
-            case _:
-                return f"{self.name}={self.param_code}" # anyhow implement
-
-
-class Static_Data:
+class StaticData:
     def __init__(self):
-        self._param_codes: {str:Param_code} = {}
-        self._custom_flag = {}
-    def get_param_code_data(self):
-        with open("core/data/param_code.json", "r", encoding="utf-8") as f:
-            data = json.load(f)
-            f.close()
+        self._action_mapping: {str:[str]} = {}
+        self._emotion_mapping: {str:[str]} = {}
+        self._frame_mapping: {str:[int]} = {}
 
-        for param_code in data.keys():
-            value = data[param_code]
-            for used_name in value["used_names"]:
-                if used_name in self._param_codes:
-                    continue
-                self._param_codes[used_name.lower()] = Param_code(used_name,param_code,value)
+    def load_all(self):
+        """Helper to load all JSON files at once"""
+        self.get_action_mapping()
+        self.get_emotion_mapping()
+        self.get_frame_mapping()
+
+    def get_frame_mapping(self):
+        try:
+            with open("core/data/frame_data.json", "r", encoding="utf-8") as f:
+                self._frame_mapping = json.load(f)
+        except FileNotFoundError:
+            self._frame_mapping = {}
 
     @property
-    def param_codes(self) -> {str:Param_code}:
-        if not self._param_codes:
-            self.get_param_code_data()
-        return self._param_codes
+    def frame_mapping(self):
+        if not self._frame_mapping:
+            self.get_frame_mapping()
+        return self._frame_mapping
 
-static_data = Static_Data()
-static_data.get_param_code_data()
+    def get_action_mapping(self):
+        with open("core/data/action_mapping.json", "r", encoding="utf-8") as f:
+            self._action_mapping = json.load(f)
 
-def pre_process_content(content:str):
-    content = content.strip()
-    split_string = content.split(" ")
-    if len(split_string) == 1:
-        return split_string[0], []
-    return split_string[0], split_string[1:]
+    @property
+    def action_mapping(self):
+        if not self._action_mapping:
+            self.get_action_mapping()
+        return self._action_mapping
+
+    def get_emotion_mapping(self):
+        with open("core/data/emotion_mapping.json", "r", encoding="utf-8") as f:
+            self._emotion_mapping = json.load(f)
+
+    @property
+    def emotion_mapping(self):
+        if not self._emotion_mapping:
+            self.get_emotion_mapping()
+        return self._emotion_mapping
+
+
+static_data = StaticData()
+static_data.load_all()
+
+
+def _get_code(user_input, mapping, threshold=75):
+    raw_upper = str(user_input).strip().upper()
+    clean_lower = raw_upper.lower()
+
+    if not clean_lower:
+        return None, f"Input '{user_input}' resulted in empty string"
+
+    # 1. Regex Check (Direct Code)
+    if re.match(CODE_PATTERN, raw_upper):
+        return [raw_upper], "Matched as direct param code"
+
+    # 2. Lemmatization
+    doc = nlp(clean_lower)
+    lemma = doc[0].lemma_
+
+    # 3. Direct Lookup
+    if lemma in mapping:
+        return mapping[lemma], f"Direct match: '{lemma}'"
+
+    # 4. Fuzzy Lookup
+    best_match, score = process.extractOne(lemma, mapping.keys())
+    if score >= threshold:
+        return mapping[best_match], f"Fuzzy match: '{best_match}' (score: {score})"
+
+    return None, f"No match found for '{user_input}'"
+
+
+def _get_single_param_code(input_str, mapping, threshold=75):
+    debug_list = []
+    choice_list, debug = _get_code(input_str, mapping, threshold)
+    debug_list.append(debug)
+
+    if not choice_list:
+        return None, debug_list
+
+    choice = random_choice(choice_list)
+    debug_list.append(f"Picked {choice} from {choice_list}")
+    return choice, debug_list
+
+
+@dataclass
+class Params:
+    # Basic attributes with types
+    action: Optional[str] = None
+    emotion: Optional[str] = None
+
+    # Lists require a default_factory to avoid mutable default errors
+    a_frames: List[int] = field(default_factory=list)
+    e_frames: List[int] = field(default_factory=list)
+
+    # Dictionary for debugging logs
+    debugs: Dict[str, List[str]] = field(default_factory=dict)
+
+    @property
+    def param_str(self) -> str:
+        str_list = []
+        if self.action:
+            str_list.append(f"action={self.action}.{{a_frame}}")
+        if self.emotion:
+            str_list.append(f"emotion={self.emotion}.{{e_frame}}")
+
+        return "?" + "&".join(str_list) if str_list else ""
+
+
+class ParamBuilder:
+    def __init__(self):
+        self.params: Params = Params()
+
+    def build_action(self, user_input: str) -> "ParamBuilder":
+        choice, debug = _get_single_param_code(user_input, static_data.action_mapping)
+
+        if choice:
+            self.params.action = choice
+            # Using .get() ensures we don't crash if the code is missing in frame_data
+            self.params.a_frames = static_data.frame_mapping.get(choice, [])
+
+        self.params.debugs["action"] = debug
+        return self
+
+    def build_emotion(self, user_input: str) -> "ParamBuilder":
+        choice, debug = _get_single_param_code(user_input, static_data.emotion_mapping)
+
+        if choice:
+            self.params.emotion = choice
+            self.params.e_frames = static_data.frame_mapping.get(choice, [])
+
+        self.params.debugs["emotion"] = debug
+        return self
+
+    def compile_params(self):
+        # Returns the final state for the API or Controller
+        return (
+            self.params.param_str,
+            self.params.a_frames,
+            self.params.e_frames,
+            self.params.debugs
+        )
+
+def build_params(action=None, emotion=None):
+    builder = ParamBuilder()
+
+    query_string, a_frames, e_frames, debugs = (
+        builder
+        .build_action(action)
+        .build_emotion(emotion)
+        .compile_params()
+    )
+    return query_string, a_frames, e_frames, debugs
 
 def parse_file_name(content:str,param:str):
     return f"{content}_{param[1:]}.gif"
-
-def process_split_string(split_strings: list[str]):
-    a_frames = None
-    e_frames = None
-    found_flags = 0
-    unused_strings: list[str] = [] # will I use this?
-    used_params:list[Param_code] = []
-    for split_string in split_strings:
-        if split_string.lower() in static_data.param_codes:
-            used_param=copy.deepcopy(static_data.param_codes[split_string.lower()])
-            if not (found_flags & used_param.flag):
-                found_flags |= used_param.flag
-                used_param.reset_name(split_string)
-                match used_param.flag:
-                    case 1:
-                        a_frames = used_param.frames
-                    case 2:
-                        e_frames = used_param.frames
-                    case _:
-                        pass
-                used_params.append(used_param)
-                continue
-        unused_strings.append(split_string)
-    """
-    implemtnat other flags
-    """
-
-    return "?"+"&".join([s.parsed_param for s in used_params]), a_frames, e_frames #," ".join(unused_strings)
-
-
-
-
-
-
-
-
-
-
-
