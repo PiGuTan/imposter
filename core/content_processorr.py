@@ -64,9 +64,12 @@ class StaticData:
         return self._emotion_mapping
 
     def get_special_mapping(self):
-        with open("core/data/special_mapping.json", "r", encoding="utf-8") as f:
-            data = json.load(f)
-            self._special_mapping = Special_mapping(data["action"], data["emotion"])
+        try:
+            with open("core/data/special_mapping.json", "r", encoding="utf-8") as f:
+                data = json.load(f)
+                self._special_mapping = Special_mapping(data["actions"], data["emotions"])
+        except FileNotFoundError:
+            self._special_mapping = {}
 
     def special_mapping(self):
         if not self._special_mapping:
