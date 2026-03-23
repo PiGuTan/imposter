@@ -71,6 +71,7 @@ class StaticData:
         except FileNotFoundError:
             self._special_mapping = {}
 
+    @property
     def special_mapping(self):
         if not self._special_mapping:
             self.get_special_mapping()
@@ -117,7 +118,7 @@ def _get_single_param_code(input_str, mapping, special_map, threshold=75):
     if not choice_list:
         return None, debug_list
 
-    choice = random_choice(choice_list)
+    choice = random_choice(choice_list) if type(choice_list) is list else choice_list
     debug_list.append(f"Picked {choice} from {choice_list}")
     return choice, debug_list
 
@@ -162,7 +163,7 @@ class ParamBuilder:
         return self
 
     def build_emotion(self, user_input: str) -> "ParamBuilder":
-        choice, debug = _get_single_param_code(user_input, static_data.emotion_mapping)
+        choice, debug = _get_single_param_code(user_input, static_data.emotion_mapping,static_data.special_mapping.emotion)
 
         if choice:
             self.params.emotion = choice
