@@ -192,5 +192,5 @@ def build_params(action=None, emotion=None):
     )
     return query_string, a_frames, e_frames, debugs
 
-def parse_file_name(content:str,param:str):
-    return f"{content}_{param[1:]}.gif"
+def parse_file_name(content:str,param:str,extension:str="gif") -> str:
+    return f"{content}_{param[1:]}.{extension}"

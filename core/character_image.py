@@ -1,8 +1,12 @@
 import logging
 from client import Image_Client
 
+from random import choice as random_choice
+
 from PIL import Image
 import io
+
+
 
 class Character_Image:
     def __init__(self, url:str ,commands:str="", params:str=""):
@@ -21,17 +25,24 @@ class Character_Image:
         self.image_client = Image_Client(self.url, self.params)
         self.images_data = self.image_client.get_images(a_frames=a_frames, e_frames=e_frames)
 
-
-    def process_image(self, a_frames=None, e_frames=None):
+    def get_all_images(self, a_frames=None, e_frames=None):
         self.get_images(a_frames=a_frames, e_frames=e_frames)
         if len(self.images_data) == 0:
             logging.error(f"No images found with {self.url}", self.url)
-        images = [Image.open(io.BytesIO(i)) for i in self.images_data]
+        return [Image.open(io.BytesIO(i)) for i in self.images_data]
+
+    def process_image(self, a_frames=None, e_frames=None):
+        images = self.get_all_images(a_frames=a_frames, e_frames=e_frames)
         io_byte = io.BytesIO()
         images[0].save(io_byte,
                        save_all=True, append_images=images[1:],
                        optimize=False, duration=500,format="gif",
                        loop=0, disposal=2)
-
         io_byte = io_byte.getvalue()
         return io_byte
+
+    def get_single_image(self, a_frames=None, e_frames=None):
+        a_frame = random_choice(a_frames) if a_frames and len(a_frames)>0 else []
+        e_frame = random_choice(e_frames) if e_frames and len(e_frames)>0 else []
+        images = self.get_all_images(a_frames=[a_frame], e_frames=[e_frame])
+        return images[0]

@@ -11,6 +11,7 @@ import util
 from core import Character_Image
 from core import content_processorr
 from core import Character
+from core import generate_maple_art,generate_maple_art_with_url
 
 load_dotenv()
 token = os.getenv('DISCORD_TOKEN')
@@ -84,7 +85,7 @@ async def copy(interaction: discord.Interaction, ign:str,action:str=None,express
     try:
         param, a_frames, e_frames, debug = content_processorr.build_params(action=action,emotion=expression)
         util.bot_logger.info(f"{debug}", interaction=interaction,
-                             result="pprocess_params")
+                             result="process_params")
 
         image = Character_Image(image_url,params=param)
 
@@ -98,6 +99,42 @@ async def copy(interaction: discord.Interaction, ign:str,action:str=None,express
                              result="error")
         await interaction.followup.send(f"imposter shot circuited with error\n{e}")
 
+@client.tree.command(name="draw", description="draws out the character with action and expression")
+@discord.app_commands.allowed_installs(guilds=True, users=True)
+@discord.app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
+async def draw(interaction: discord.Interaction, ign:str,action:str=None,expression:str=None, style:str="photo realistic"):
+    util.bot_logger.info(f"ign={ign}, action={action}, expression={expression}", interaction=interaction, result="receive")
+    await interaction.response.defer(thinking=True)
+
+    image_url = Character(ign).image_url
+    if not image_url:
+        util.bot_logger.info(f"ign not found ign={ign}", interaction=interaction,
+                             result="error")
+        await interaction.followup.send(f"Who is {ign}:question:")
+        return
+
+    if not (action or expression):
+        util.bot_logger.info(f"no action or expression found", interaction=interaction,
+                             result="success")
+        artwork, e = generate_maple_art_with_url(image_url, style)
+        await interaction.followup.send(file=discord.File(artwork, filename=f"{ign}.png"))
+        return
+    debug = {}
+    try:
+        param, a_frames, e_frames, debug = content_processorr.build_params(action=action, emotion=expression)
+        util.bot_logger.info(f"{debug}", interaction=interaction,
+                             result="process_params")
+        image = Character_Image(image_url,params=param)
+        artwork,e = generate_maple_art(image.get_single_image(a_frames, e_frames), user_prompt_style=style)
+        file_name = content_processorr.parse_file_name(ign, param,extension="png")
+        with open("output_file.png", "wb") as f:
+            f.write(artwork.getvalue())
+        await interaction.followup.send(file=discord.File(artwork, filename=file_name))
+
+    except Exception as e:
+        util.bot_logger.error(f"error={e}, debug={debug}", interaction=interaction,
+                             result="error")
+        await interaction.followup.send(f"imposter shot circuited with error\n{e}")
 try:
     client.run(token, **util.discord_logging_kwarg)
 except KeyboardInterrupt:
