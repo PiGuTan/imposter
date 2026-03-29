@@ -16,7 +16,7 @@ class Data_Agent:
         self.character_name = character_name
         self.resp_dict = {}
         self.resp_headers = {}
-        self.ocid = ""
+        self._ocid = ""
 
         self.call_stack = {}
 
@@ -32,7 +32,6 @@ class Data_Agent:
             logging.error(f"endpoint is empty %s", self.call_stack)
             return {}
 
-
         response = requests.request("GET", url, headers=headers, data={}, params=params)
 
         if response.status_code != 200:
@@ -47,19 +46,38 @@ class Data_Agent:
             self.resp_dict = json.loads(response.text)
         return self.resp_dict
 
-    def set_ocid(self, ocid):
-        self.ocid = ocid
-
     def get_ocid(self):
         param = {
             "character_name": self.character_name,
         }
-        return self._call_openapi(endpoint="maplestorysea/v1/id", params=param)
+        resp_dict = self._call_openapi(endpoint="maplestorysea/v1/id", params=param)
+        if "ocid" not in resp_dict:
+            return
+        self._ocid = resp_dict["ocid"]
 
-    def get_basic_info(self):
+    @property
+    def ocid(self):
+        if not self._ocid:
+            self.get_ocid()
+        return self._ocid
+
+    @property
+    def default_param(self):
         param = {
             "ocid": self.ocid,
         }
         if self.date:
             param["date"] = self.date
-        return self._call_openapi(endpoint="maplestorysea/v1/character/basic", params=param)
+        return param
+
+    def get_basic_info(self):
+         return self._call_openapi(endpoint="maplestorysea/v1/character/basic", params=self.default_param)
+
+    async def get_item(self):
+        return self._call_openapi(endpoint="maplestorysea/v1/character/item-equipment", params=self.default_param)
+
+    async def get_cash_item(self):
+        return self._call_openapi(endpoint="maplestorysea/v1/character/cashitem-equipment", params=self.default_param)
+
+    async def get_beauty(self):
+        return self._call_openapi(endpoint="maplestorysea/v1/character/beauty-equipment", params=self.default_param)

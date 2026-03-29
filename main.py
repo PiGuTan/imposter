@@ -132,9 +132,34 @@ async def draw(interaction: discord.Interaction, ign:str,action:str=None,express
         await interaction.followup.send(file=discord.File(artwork, filename=file_name))
 
     except Exception as e:
-        util.bot_logger.error(f"error={e}, debug={debug}", interaction=interaction,
+        util.bot_logger.error(f"error={e}, debug=1{debug}", interaction=interaction,
                              result="error")
         await interaction.followup.send(f"imposter shot circuited with error\n{e}")
+
+@client.tree.command(name="create_prompt", description="imitates a users character with an action and expression")
+@discord.app_commands.allowed_installs(guilds=True, users=True)
+@discord.app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
+async def create_prompt(interaction: discord.Interaction, ign:str,action:str=None,expression:str=None, style:str="photo realistic"):
+    util.bot_logger.info(f"ign={ign}, action={action}, expression={expression}", interaction=interaction, result="receive")
+    await interaction.response.defer(thinking=True)
+
+    character = Character(ign)
+    if not character:
+        util.bot_logger.info(f"ign not found ign={ign}", interaction=interaction,
+                             result="error")
+        await interaction.followup.send(f"Who is {ign}:question:")
+        return
+    task = asyncio.create_task(character.get_all_beauty_items())
+    if not (action or expression):
+        util.bot_logger.info(f"no action or expression found", interaction=interaction,
+                             result="success")
+        await task
+        await interaction.followup.send(content=character.image_url)
+        # prompt
+        await interaction.followup.send(content=character.beauty_items)
+        return
+    debug = {}
+
 try:
     client.run(token, **util.discord_logging_kwarg)
 except KeyboardInterrupt:
