@@ -6,8 +6,6 @@ from random import choice as random_choice
 from PIL import Image
 import io
 
-
-
 class Character_Image:
     def __init__(self, url:str ,commands:str="", params:str=""):
         self.commands = commands.split(" ")
@@ -15,14 +13,19 @@ class Character_Image:
 
         self.params = params
 
-        self.image_client = None
+        self._image_client = None
         self.images_data = []
         self.image_gif = []
+
+    @property
+    def image_client(self):
+        if self._image_client:
+            return self._image_client
+        self._image_client = Image_Client(self.url, self.params)
 
     def get_images(self, a_frames=None, e_frames=None):
         if len(self.images_data) > 0:
             return
-        self.image_client = Image_Client(self.url, self.params)
         self.images_data = self.image_client.get_images(a_frames=a_frames, e_frames=e_frames)
 
     def get_all_images(self, a_frames=None, e_frames=None):
