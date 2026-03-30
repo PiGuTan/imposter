@@ -22,6 +22,7 @@ class Character_Image:
         if self._image_client:
             return self._image_client
         self._image_client = Image_Client(self.url, self.params)
+        return self._image_client
 
     def get_images(self, a_frames=None, e_frames=None):
         if len(self.images_data) > 0:
