@@ -119,7 +119,7 @@ class Character:
             self._process_cash_item = True
 
     def merge_temp_items(self):
-        print(self._temp_items)
+        # print(self._temp_items)
         for item in self._temp_items.values():
             self._beauty_items.append(item)
 
