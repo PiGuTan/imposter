@@ -39,6 +39,12 @@ class Beauty_item:
             **({'color': self.colour} if self.colour else {})
         }
 
+    def __str__(self):
+        print_items = [self.item_type, self.item_name]
+        if self.colour:
+            print_items.append(self.colour)
+        return "|".join(print_items)
+
 class Character:
     def __init__(self, character_name:str, date = None):
         self.character_name = character_name
@@ -104,11 +110,13 @@ class Character:
             prefix = "additional_"
         else:
             prefix = ""
+
+        items = data[f"{prefix}cash_item_equipment_base"]
         if data["preset_no"]:
             preset = data["preset_no"]
-            items = data[f"{prefix}cash_item_equipment_preset_{preset}"]
-        else:
-            items = data[f"{prefix}cash_item_equipment_base"]
+            # only zero (beta) uses additional preset
+            items += data[f"cash_item_equipment_preset_{preset}"]
+
         for item_data in items:
             if item_data["cash_item_equipment_slot"] not in DEFINED_ITEMS:
                 continue
@@ -122,6 +130,15 @@ class Character:
         # print(self._temp_items)
         for item in self._temp_items.values():
             self._beauty_items.append(item)
+
+    @property
+    def temp_items_debug(self):
+        if not self._temp_items or self._temp_items == {}:
+            return {}
+        debug_dict = {}
+        for key, value in self._temp_items.items():
+            debug_dict[key] = str(value)
+        return debug_dict
 
     async def get_all_beauty_items(self):
         # Unpack the results from the gather call
@@ -138,7 +155,9 @@ class Character:
             self.fill_beauty_details(beauty_data)
 
             self.fill_temp_item_details(item_data)
+            # print(self.temp_items_debug)
             self.fill_cash_details(cash_data)
+            # print(self.temp_items_debug)
             if self._process_cash_item:
                 self.merge_temp_items()
             return self._beauty_items
