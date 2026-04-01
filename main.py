@@ -159,6 +159,17 @@ async def create_prompt(interaction: discord.Interaction, ign:str,action:str=Non
         await interaction.followup.send(content=character.beauty_items)
         return
     debug = {}
+    try:
+        param, a_frames, e_frames, debug = content_processorr.build_params(action=action, emotion=expression)
+        image = Character_Image(character.image_url, params=param)
+        image_url = image.get_single_image_url(a_frames, e_frames)
+        await interaction.followup.send(content=image_url)
+        # prompt
+        await interaction.followup.send(content=character.beauty_items)
+    except Exception as e:
+        util.bot_logger.error(f"error={e}, debug={debug}", interaction=interaction,
+                             result="error")
+        await interaction.followup.send(f"imposter shot circuited with error\n{e}")
 
 try:
     client.run(token, **util.discord_logging_kwarg)

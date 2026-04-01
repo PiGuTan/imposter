@@ -46,7 +46,13 @@ class Character_Image:
         return io_byte
 
     def get_single_image(self, a_frames=None, e_frames=None):
+        # use below function
         a_frame = random_choice(a_frames) if a_frames and len(a_frames)>0 else []
         e_frame = random_choice(e_frames) if e_frames and len(e_frames)>0 else []
         images = self.get_all_images(a_frames=[a_frame], e_frames=[e_frame])
         return images[0]
+
+    def get_single_image_url(self, a_frames=None, e_frames=None):
+        a_frame = random_choice(a_frames) if a_frames and len(a_frames)>0 else []
+        e_frame = random_choice(e_frames) if e_frames and len(e_frames)>0 else []
+        return self.url + self.params.format(a_frame=a_frame, e_frame=e_frame)
