@@ -1,34 +1,48 @@
 import logging
-from discord import Interaction
+import contextvars
+import uuid
 
-discord_logging_kwarg = {
-    "log_handler": logging.FileHandler(filename='discord.log', encoding='utf-8', mode='w'),
-    "log_level":logging.DEBUG
-}
+request_id_var = contextvars.ContextVar("request_id", default="N/A")
+
+class RequestIdFilter(logging.Filter):
+    def filter(self, record):
+        record.request_id = request_id_var.get()
+        return True
+
 class Logger:
+    """
+    optional interaction_id - generate a new request_id
+    required result
+    """
     def __init__(self):
         self.bot_logger = logging.getLogger('bot_actions')
         self.bot_logger.setLevel(logging.INFO)
-        self.bot_handler = logging.FileHandler(filename='actions.log', encoding='utf-8', mode='w')
-        self.bot_formatter = logging.Formatter('%(asctime)s|%(interaction_id)s|%(funcName)s|%(result)s|%(message)s')
-        self.bot_logger.addHandler(self.bot_handler)
-        self.bot_handler.setFormatter(self.bot_formatter)
 
-    def log_extra(self,interaction:Interaction,result:str="-",**kwargs):
-        return {
-            "interaction_id": interaction.id,
-            "result": result,
-            **kwargs
-        }
+        if not self.bot_logger.handlers:
+            self.bot_handler = logging.FileHandler(filename='actions.log', encoding='utf-8', mode='w')
 
-    def info(self, message,interaction:Interaction,result:str="-",**kwargs):
-        log_extra = self.log_extra(interaction=interaction,result=result,**kwargs)
-        self.bot_logger.info(message,extra=log_extra,stacklevel=2)
+            self.bot_handler.addFilter(RequestIdFilter())
 
-    def debug(self, message,interaction:Interaction,result:str="-",**kwargs):
-        log_extra = self.log_extra(interaction=interaction,result=result,**kwargs)
-        self.bot_logger.debug(message,extra=log_extra,stacklevel=2)
+            self.bot_formatter = logging.Formatter('%(asctime)s|%(request_id)s|%(funcName)s|%(result)s|%(message)s')
+            self.bot_handler.setFormatter(self.bot_formatter)
+            self.bot_logger.addHandler(self.bot_handler)
 
-    def error(self, message,interaction:Interaction,result:str="-",**kwargs):
-        log_extra = self.log_extra(interaction=interaction,result=result,**kwargs)
-        self.bot_logger.error(message,extra=log_extra,stacklevel=2)
+    def _process_context(self, kwargs):
+        if "interaction_id" in kwargs:
+            new_id = f"REQ-{kwargs["interaction_id"]}-{str(uuid.uuid4())[:8]}"
+            request_id_var.set(new_id)
+            kwargs.pop("interaction_id",None)
+
+    def _log(self, level, message, result="-", **kwargs):
+        self._process_context(kwargs)
+        extra = {"result": result, **kwargs}
+        self.bot_logger.log(level, message, extra=extra, stacklevel=3)
+
+    def info(self, message, result="-", **kwargs):
+        self._log(logging.INFO, message, result, **kwargs)
+
+    def debug(self, message, result="-", **kwargs):
+        self._log(logging.DEBUG, message, result, **kwargs)
+
+    def error(self, message, result="-", **kwargs):
+        self._log(logging.ERROR, message, result, **kwargs)
