@@ -2,6 +2,11 @@ import logging
 import contextvars
 import uuid
 
+discord_logging_kwarg = {
+    "log_handler": logging.FileHandler(filename='discord.log', encoding='utf-8', mode='w'),
+    "log_level":logging.DEBUG
+}
+
 request_id_var = contextvars.ContextVar("request_id", default="N/A")
 
 class RequestIdFilter(logging.Filter):
