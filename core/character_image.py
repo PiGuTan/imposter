@@ -38,12 +38,14 @@ class Character_Image:
     def process_image(self, a_frames=None, e_frames=None):
         images = self.get_all_images(a_frames=a_frames, e_frames=e_frames)
         io_byte = io.BytesIO()
+        if len(images) == 1:
+            return images[0].save(io_byte), "png"
         images[0].save(io_byte,
                        save_all=True, append_images=images[1:],
                        optimize=False, duration=500,format="gif",
                        loop=0, disposal=2)
         io_byte = io_byte.getvalue()
-        return io_byte
+        return io_byte, "gif"
 
     def get_single_image(self, a_frames=None, e_frames=None):
         # use below function
