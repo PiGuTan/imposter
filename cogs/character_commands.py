@@ -8,7 +8,7 @@ import asyncio
 import util
 from core import Character, Character_Image, content_processor
 from core import generate_maple_art,generate_maple_art_with_url
-from services.character_service import get_character, get_image_io, get_file_name
+from services.character_service import get_character, get_image_io, get_prompt_with_context
 
 
 class CharacterCommands(commands.Cog):
@@ -112,24 +112,18 @@ class CharacterCommands(commands.Cog):
             util.bot_logger.info(f"ign not found ign={ign}",result="error")
             await interaction.followup.send(f"Who is {ign}:question:")
             return
-        task = asyncio.create_task(character.get_all_beauty_items())
-        if not (action or expression):
-            util.bot_logger.info(f"no action or expression found", result="success")
-            await task
-            await interaction.followup.send(content=character.image_url)
-            # prompt
-            await interaction.followup.send(content=character.beauty_items)
-            return
-        debug = {}
+
         try:
-            param, a_frames, e_frames, debug = content_processor.build_params(action=action, emotion=expression)
-            image = Character_Image(character.image_url, params=param)
-            image_url = image.get_single_image_url(a_frames, e_frames)
+            await character.get_all_beauty_items()
+            if action or expression:
+                image_url,prompt,beauty_details = get_prompt_with_context(character, action, expression)
+            else:
+                image_url,prompt,beauty_details = character.image_url,"",character.beauty_items
             await interaction.followup.send(content=image_url)
             # prompt
-            await interaction.followup.send(content=character.beauty_items)
+            await interaction.followup.send(content=beauty_details)
         except Exception as e:
-            util.bot_logger.error(f"error={e}, debug={debug}", result="error")
+            util.bot_logger.error(f"error={e}", result="error")
             await interaction.followup.send(f"imposter shot circuited with error\n{e}")
 
 async def setup(bot):
