@@ -39,7 +39,7 @@ class CharacterCommands(commands.Cog):
     @app_commands.allowed_installs(guilds=False, users=True)
     @app_commands.allowed_contexts(guilds=False, dms=True, private_channels=False)
     async def preview(self, interaction: discord.Interaction):
-        util.bot_logger.info(f"{interaction.user.id}",result="incoming", interaction_id=interaction)
+        util.bot_logger.info(f"{interaction.user.id}",result="incoming", interaction_id=interaction.id)
         await interaction.response.send_message(
             r"https://github.com/PiGuTan/imposter/blob/main/previews/character_param_preview.gif?raw=true")
 
@@ -66,7 +66,7 @@ class CharacterCommands(commands.Cog):
     @app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
     async def draw(self, interaction: discord.Interaction, ign: str, action: str = None, expression: str = None,
                    style: str = "photo realistic"):
-        util.bot_logger.info(f"ign={ign}, action={action}, expression={expression}", interaction_id=interaction,
+        util.bot_logger.info(f"ign={ign}, action={action}, expression={expression}", interaction_id=interaction.id,
                              result="receive")
         await interaction.response.defer(thinking=True)
 
@@ -84,7 +84,7 @@ class CharacterCommands(commands.Cog):
         debug = {}
         try:
             param, a_frames, e_frames, debug = content_processor.build_params(action=action, emotion=expression)
-            util.bot_logger.info(f"{debug}", interaction_id=interaction,
+            util.bot_logger.info(f"{debug}", interaction_id=interaction.id,
                                  result="process_params")
             image = Character_Image(image_url, params=param)
             artwork, e = generate_maple_art(image.get_single_image(a_frames, e_frames), user_prompt_style=style)
@@ -94,7 +94,7 @@ class CharacterCommands(commands.Cog):
             await interaction.followup.send(file=discord.File(artwork, filename=file_name))
 
         except Exception as e:
-            util.bot_logger.error(f"error={e}, debug=1{debug}", interaction_id=interaction,
+            util.bot_logger.error(f"error={e}, debug=1{debug}", interaction_id=interaction.id,
                                   result="error")
             await interaction.followup.send(f"imposter shot circuited with error\n{e}")
 
@@ -102,8 +102,8 @@ class CharacterCommands(commands.Cog):
     @app_commands.allowed_installs(guilds=True, users=True)
     @app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
     async def create_prompt(self, interaction: discord.Interaction, ign: str, action: str = None, expression: str = None,
-                            style: str = "photo realistic"):
-        util.bot_logger.info(f"ign={ign}, action={action}, expression={expression}", interaction_id=interaction,
+                            style: str = "photo realistic", proportions:str = "adult", other_instructions: str = None):
+        util.bot_logger.info(f"ign={ign}, action={action}, expression={expression}", interaction_id=interaction.id,
                              result="receive")
         await interaction.response.defer(thinking=True)
 
@@ -115,12 +115,10 @@ class CharacterCommands(commands.Cog):
 
         try:
             await character.get_all_beauty_items()
-            if action or expression:
-                image_url,prompt,beauty_details = get_prompt_with_context(character, action, expression)
-            else:
-                image_url,prompt,beauty_details = character.image_url,"",character.beauty_items
+            image_url,prompt,beauty_details = get_prompt_with_context(character, action, expression, style, proportions,other_instructions)
             await interaction.followup.send(content=image_url)
-            # prompt
+            if prompt:
+                await interaction.followup.send(content=prompt)
             await interaction.followup.send(content=beauty_details)
         except Exception as e:
             util.bot_logger.error(f"error={e}", result="error")

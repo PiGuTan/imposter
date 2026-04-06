@@ -1,8 +1,9 @@
+from importlib.metadata import metadata
+
 from core import Character, Character_Image
 from PIL import Image
-from core import content_processor
+from core import content_processor,build_prompt
 import util
-import asyncio
 
 def get_character(ign) -> Character | None:
     """Returns Character if valid, None if not found."""
@@ -29,14 +30,17 @@ def get_image_url(image_url, action, expression) -> str:
 def get_params(action, expression) -> tuple | None:
     """Returns (param, a_frames, e_frames, debug) or None."""
 
-def get_prompt_with_context(character:Character,action, expression) -> (str,str,str):
+def get_prompt_with_context(character:Character,action, expression,style,proportions,other_instructions) -> (str,str,str):
     """generates an image + prompt + """
     try:
         param, a_frames, e_frames, debug = content_processor.build_params(action=action, emotion=expression)
         image = Character_Image(character.image_url, params=param)
         image_url = image.get_single_image_url(a_frames, e_frames)
 
-        return image_url, "", character.beauty_items
+        #how do i pass a frame and eframe over?
+        full_prompt = build_prompt(style,proportions,character.beauty_items,other_instructions)
+
+        return image_url, full_prompt, character.beauty_items
     except Exception as e:
         util.bot_logger.error(f"error={e}", result="error")
         return None

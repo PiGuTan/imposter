@@ -167,7 +167,7 @@ class Character:
     @property
     def beauty_items(self):
         # should be used after await get_all_beauty_items
-        items = []
+        items = {}
         for item in self._beauty_items:
-            items.append(item.dict)
+            items[item.dict["type"]]=item.dict
         return items
