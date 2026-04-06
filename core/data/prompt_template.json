@@ -1,0 +1,8 @@
+{
+  "user_instruction_header": "User Instruction:",
+  "user_instruction": "I am providing a 2D pixel art sprite from MapleStory and its associated equipment metadata.",
+  "task_header": "Task:",
+  "task": "Transform this character into a high-quality {style} illustration with {proportions} proportions.",
+  "metadata_header": "Character Details to Preserve:",
+  "other_instruction_header": "Other Instructions:"
+}
