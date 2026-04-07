@@ -39,7 +39,8 @@ class Character_Image:
         images = self.get_all_images(a_frames=a_frames, e_frames=e_frames)
         io_byte = io.BytesIO()
         if len(images) == 1:
-            return images[0].save(io_byte), "png"
+            images[0].save(io_byte, format="png")
+            return io_byte.getvalue(), "png"
         images[0].save(io_byte,
                        save_all=True, append_images=images[1:],
                        optimize=False, duration=500,format="gif",
