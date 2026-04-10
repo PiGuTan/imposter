@@ -1,0 +1,20 @@
+Core Instruction:
+
+Style & Technical Requirements:
+- Art Style: A modern anime or cinematic animation style with clean line art and smooth shading.
+- Aesthetics: Ultra-detailed, realistic material textures (fabric, hair, accessories), enhanced lighting, 4k resolution.
+- Background: design a background based on characters weapon, outfit or both
+- Composition: A full-body frame including the head to the toe, with shoes visible. No cropping.
+- Viewpoint: Cinematic lighting with balanced proportions and a clean silhouette.
+- Ratio: 9:16 aspect ratio.
+
+Character Details to Preserve (From Reference):
+- Faithfully replicate the original hairstyle and color.
+- Accurately recreate the complete outfit and all accessories.
+- Preserve the character’s overall personality.
+
+Final Execution (The Task):
+1. Use the provided MapleStory image as the reference.
+1. Reimagine the character with realistic animated proportions (non-chibi).
+1. Place the character in a dynamic but natural standing pose.
+1. Use a simple or softly blurred background that matches the character's theme, without distracting from the subject.
