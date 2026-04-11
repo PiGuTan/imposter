@@ -1,9 +1,10 @@
 Core Instruction:
+Transform the character in the reference image into a full-body animated character in a high-quality, non-chibi cinematic animation style.
 
 Style & Technical Requirements:
 - Art Style: A modern anime or cinematic animation style with clean line art and smooth shading.
 - Aesthetics: Ultra-detailed, realistic material textures (fabric, hair, accessories), enhanced lighting, 4k resolution.
-- Background: design a background based on characters weapon, outfit or both
+- Background: design a background based on characters weapon, outfit, headwear or any combination
 - Composition: A full-body frame including the head to the toe, with shoes visible. No cropping.
 - Viewpoint: Cinematic lighting with balanced proportions and a clean silhouette.
 - Ratio: 9:16 aspect ratio.
