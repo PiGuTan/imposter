@@ -113,7 +113,7 @@ class PromptBuilder:
     def build_equipment_manifest(self,beauty_items:dict=None):
         if not beauty_items or beauty_items == {}:
             return self
-        self.prompt.beauty_list = [self.prompt.equipment_manifest_header]
+        self.beauty_list = [self.prompt.equipment_manifest_header]
 
         self.build_face_hair(beauty_items)
         self.build_hat(beauty_items)
