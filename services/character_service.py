@@ -12,7 +12,7 @@ def get_character(ign) -> Character | None:
 def get_image_io(image_url, action, expression) -> (bytes, str):
     """Returns image in io bytes together with its format"""
     try:
-        param, a_frames, e_frames, debug = content_processor.build_params(action=action, emotion=expression)
+        param, a_frames, e_frames, _, _, debug = content_processor.build_params(action=action, emotion=expression)
         util.bot_logger.info(f"{debug}",result="process_params")
         image = Character_Image(image_url,params=param)
         output_bytes, extension = image.process_image(a_frames=a_frames, e_frames=e_frames)
@@ -33,12 +33,12 @@ def get_params(action, expression) -> tuple | None:
 def get_prompt_with_context(character:Character,action, expression,style,proportions,other_instructions) -> (str,str,str):
     """generates an image + prompt + """
     try:
-        param, a_frames, e_frames, debug = content_processor.build_params(action=action, emotion=expression)
+        param, a_frames, e_frames, a_param, e_param, debug = content_processor.build_params(action=action, emotion=expression)
         image = Character_Image(character.image_url, params=param)
         image_url = image.get_single_image_url(a_frames, e_frames)
 
         #how do i pass a frame and eframe over?
-        full_prompt = build_prompt(style,proportions,character.beauty_items,other_instructions)
+        full_prompt = build_prompt(character.beauty_items)
 
         return image_url, full_prompt, character.beauty_items
     except Exception as e:

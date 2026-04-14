@@ -127,10 +127,10 @@ class PromptBuilder:
         return self
 
 
-def build_prompt(style,proportions,beauty_items,other_instructions) -> str:
+def build_prompt(beauty_items,a_param="A00",e_param="E00") -> str:
     prompt_builder = PromptBuilder()
     with suppress(KeyError):
-        prompt_builder.build_pose_and_action(action = "standing around, chilling", expression = "normal expression")
+        prompt_builder.build_pose_and_action(action = a_param, expression = e_param)
         prompt_builder.build_equipment_manifest(beauty_items)
     return prompt_builder.prompt.full_prompt
 

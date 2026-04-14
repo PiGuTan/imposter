@@ -83,7 +83,7 @@ class CharacterCommands(commands.Cog):
             return
         debug = {}
         try:
-            param, a_frames, e_frames, debug = content_processor.build_params(action=action, emotion=expression)
+            param, a_frames, e_frames, _, _, debug = content_processor.build_params(action=action, emotion=expression)
             util.bot_logger.info(f"{debug}", interaction_id=interaction.id,
                                  result="process_params")
             image = Character_Image(image_url, params=param)

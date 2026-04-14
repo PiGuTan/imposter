@@ -178,19 +178,21 @@ class ParamBuilder:
             self.params.param_str,
             self.params.a_frames,
             self.params.e_frames,
+            self.params.action,
+            self.params.emotion,
             self.params.debugs
         )
 
 def build_params(action=None, emotion=None):
     builder = ParamBuilder()
 
-    query_string, a_frames, e_frames, debugs = (
+    query_string, a_frames, e_frames,a_param,e_param, debugs = (
         builder
         .build_action(action)
         .build_emotion(emotion)
         .compile_params()
     )
-    return query_string, a_frames, e_frames, debugs
+    return query_string, a_frames, e_frames,"" ,"", debugs
 
 def parse_file_name(content:str,param:str,extension:str="gif") -> str:
     return f"{content}_{param[1:]}.{extension}"
