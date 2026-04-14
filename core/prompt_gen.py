@@ -9,6 +9,11 @@ class StaticData:
             data = json.load(f)
         self.pose_and_action_header = data["pose_and_action_header"]
         self.equipment_manifest_header = data["equipment_manifest_header"]
+        with open("core/data/param_description.json") as f:
+            data = json.load(f)
+        self.action_description = data["action"]
+        self.emotion_description = data["emotion"]
+
 
 static_data = StaticData()
 
@@ -34,10 +39,16 @@ class PromptBuilder:
         self.prompt:Prompt = Prompt()
         self.beauty_list:list = []
 
-    def build_pose_and_action(self,action:str=None,expression:str=None):
-        if not (action or expression):
+    def build_pose_and_action(self,a_param:str=None,e_param:str=None):
+        if not (a_param or e_param):
             return self
         pose_and_action_list = [self.prompt.pose_and_action_header]
+        action,expression = "", ""
+        if a_param in static_data.action_description:
+            action = static_data.action_description[a_param]
+        if e_param in static_data.emotion_description:
+            expression = static_data.emotion_description[e_param]
+
         if action:
             action = f"Action: {action}"
             pose_and_action_list.append(action)
@@ -130,7 +141,7 @@ class PromptBuilder:
 def build_prompt(beauty_items,a_param="A00",e_param="E00") -> str:
     prompt_builder = PromptBuilder()
     with suppress(KeyError):
-        prompt_builder.build_pose_and_action(action = a_param, expression = e_param)
+        prompt_builder.build_pose_and_action(a_param = a_param, e_param = e_param)
         prompt_builder.build_equipment_manifest(beauty_items)
     return prompt_builder.prompt.full_prompt
 

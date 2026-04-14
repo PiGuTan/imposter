@@ -38,7 +38,7 @@ def get_prompt_with_context(character:Character,action, expression,style,proport
         image_url = image.get_single_image_url(a_frames, e_frames)
 
         #how do i pass a frame and eframe over?
-        full_prompt = build_prompt(character.beauty_items)
+        full_prompt = build_prompt(character.beauty_items,a_param=a_param,e_param=e_param)
 
         return image_url, full_prompt, character.beauty_items
     except Exception as e:

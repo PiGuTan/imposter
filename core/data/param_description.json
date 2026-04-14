@@ -1,0 +1,18 @@
+{
+  "action": {
+    "A00": "standing around"
+  },
+  "emotion": {
+    "E00": "",
+    "E01": "An eye closed with a gentle smile, in an attempt to hint something",
+    "E02": "A wide, genuine smile that reaches the eyes, causing them to crinkle at the corners",
+
+    "E06":"Eyelids gently closed, lashes resting softly against the cheek",
+
+
+    "E13":"Eyes filled with tiny, glittering catchlights (specular highlights) to show excitement",
+    "E14":"Eyes wide and dilated, eyebrows raised high on the forehead",
+
+    "E19": "Eyes leaving its socket"
+  }
+}

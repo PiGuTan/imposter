@@ -192,7 +192,7 @@ def build_params(action=None, emotion=None):
         .build_emotion(emotion)
         .compile_params()
     )
-    return query_string, a_frames, e_frames,"" ,"", debugs
+    return query_string, a_frames, e_frames, a_param , e_param, debugs
 
 def parse_file_name(content:str,param:str,extension:str="gif") -> str:
     return f"{content}_{param[1:]}.{extension}"
