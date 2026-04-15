@@ -31,7 +31,7 @@ class Prompt:
     @property
     def full_prompt(self):
         prompt_detail = "\n\n".join(self.prompt_detail)
-        return f"```\n{prompt_detail}\n```"
+        return prompt_detail
 
 
 class PromptBuilder:

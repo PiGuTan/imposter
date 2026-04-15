@@ -118,8 +118,8 @@ class CharacterCommands(commands.Cog):
             image_url,prompt,beauty_details = get_prompt_with_context(character, action, expression, style, proportions,other_instructions)
             await interaction.followup.send(content=image_url)
             if prompt:
-                await interaction.followup.send(content=prompt)
-            await interaction.followup.send(content=beauty_details)
+                await interaction.followup.send(content=f"```\n{prompt}\n```") # formatting handled here since prompt may have processing in services
+            # await interaction.followup.send(content=beauty_details)
         except Exception as e:
             util.bot_logger.error(f"error={e}", result="error")
             await interaction.followup.send(f"imposter shot circuited with error\n{e}")
