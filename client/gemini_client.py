@@ -20,21 +20,29 @@ class Gemini_agent:
             self.config = types.GenerateContentConfig(
                 response_modalities=["TEXT"],
             )
+        self._contents = []
         self.response = None
 
-    async def generate(self,contents:list=None):
-        if contents is None:
+    def set_prompt(self, *prompt):
+        if not prompt:
+            return
+        self._contents = prompt
+
+    async def generate(self):
+        if self._contents is None:
             return
         try:
-            self.response = await client.models.generate_content(
+            self.response = await client.aio.models.generate_content(
                 model=self.model,
-                contents=contents,
+                contents=self._contents,
                 config=self.config
             )
         except Exception as e:
             print(f"Error: {e}")
 
     def get_response_data(self):
+        if len(self._contents) == 0:
+            return "",None
         text_out = ""
         image_bytes = None
 

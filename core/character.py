@@ -1,22 +1,35 @@
 import client
 import asyncio
+import json
 
-DEFINED_ITEMS = ["Face Acc.","Eye Acc.","Earring","Weapon","Hat","Top","Bottom","Cape","Glove","Shoes"]
+class Static_data:
+    def __init__(self):
+        with open("core/data/item_prompt.json") as f:
+            data = json.load(f)
+            self.item_prompt:str = data["item_description"]
+            self.defined_items:list[str] = data["defined_items"]
+            self.description_required_items:list[str] = data["description_required_items"]
+
+static_data = Static_data()
 
 class Beauty_item:
-    def __init__(self, item_type:str, item_name:str):
+    def __init__(self, item_type:str, item_name:str,item_url:str=None):
         self.item_type = item_type
         self.item_name = item_name
+        self.item_url = item_url
+        self.description = None
         self.colour = None
 
     @classmethod
-    def with_item_equipment(cls, data:dict):
-        item = cls(data['item_equipment_slot'],data['item_shape_name'])
+    def with_item_equipment(cls, data:dict,is_description_needed:bool=False):
+        url = data["item_shape_icon"] if is_description_needed else None
+        item = cls(data['item_equipment_slot'],data['item_shape_name'],url)
         return item
 
     @classmethod
-    def with_cash_equipment(cls, data:dict):
-        item = cls(data['cash_item_equipment_slot'],data['cash_item_name'])
+    def with_cash_equipment(cls, data:dict,is_description_needed:bool=False):
+        url = data["cash_item_icon"] if is_description_needed else None
+        item = cls(data['cash_item_equipment_slot'],data['cash_item_name'],url)
         # what to do with colour
         return item
 
@@ -35,7 +48,7 @@ class Beauty_item:
     def dict(self):
         return {
             'type': self.item_type,
-            'name': self.item_name,
+            'name': self.description if self.description else self.item_name,
             **({'color': self.colour} if self.colour else {})
         }
 
@@ -99,9 +112,10 @@ class Character:
         else:
             items = data["item_equipment"]
         for item_data in items:
-            if item_data["item_equipment_slot"] not in DEFINED_ITEMS:
+            if item_data["item_equipment_slot"] not in static_data.defined_items:
                 continue
-            self._temp_items[item_data["item_equipment_slot"]] = Beauty_item.with_item_equipment(item_data)
+            is_description_needed = item_data["item_equipment_slot"] in static_data.description_required_items
+            self._temp_items[item_data["item_equipment_slot"]] = Beauty_item.with_item_equipment(item_data,is_description_needed)
 
     def fill_cash_details(self,data:dict):
         if not data or data == {}:
@@ -118,10 +132,10 @@ class Character:
             items += data[f"cash_item_equipment_preset_{preset}"]
 
         for item_data in items:
-            if item_data["cash_item_equipment_slot"] not in DEFINED_ITEMS:
+            if item_data["cash_item_equipment_slot"] not in static_data.defined_items:
                 continue
-
-            self._temp_items[item_data["cash_item_equipment_slot"]] = Beauty_item.with_cash_equipment(item_data)
+            is_description_needed = item_data["cash_item_equipment_slot"] in static_data.description_required_items
+            self._temp_items[item_data["cash_item_equipment_slot"]] = Beauty_item.with_cash_equipment(item_data,is_description_needed)
             if item_data["cash_item_equipment_part"] == "Overall" and "Bottom" in self._temp_items:
                 del self._temp_items["Bottom"]
             self._process_cash_item = True
@@ -130,6 +144,27 @@ class Character:
         # print(self._temp_items)
         for item in self._temp_items.values():
             self._beauty_items.append(item)
+
+    async def _process_single_item(self, item):
+        agent = client.Gemini_agent()
+        prompt = static_data.item_prompt
+        agent.set_prompt(item.item_url,prompt)
+        try:
+            await agent.generate()
+        except Exception as e:
+            print(e) #dont need to fail
+        description, _ = agent.get_response_data()
+        item.description = description
+
+    async def post_process_beauty_items(self):
+        self._beauty_items = [i for i in self._beauty_items if "Transparent" not in i.item_name]
+
+        tasks = [
+            self._process_single_item(item)
+            for item in self._beauty_items if item.item_url
+        ]
+
+        await asyncio.gather(*tasks)
 
     @property
     def temp_items_debug(self):
@@ -153,13 +188,13 @@ class Character:
 
         try:
             self.fill_beauty_details(beauty_data)
-
             self.fill_temp_item_details(item_data)
-            # print(self.temp_items_debug)
             self.fill_cash_details(cash_data)
-            # print(self.temp_items_debug)
             if self._process_cash_item:
                 self.merge_temp_items()
+
+            await self.post_process_beauty_items()
+
             return self._beauty_items
         except Exception as e:
             return self._beauty_items

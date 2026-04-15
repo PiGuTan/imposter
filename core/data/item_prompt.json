@@ -1,0 +1,5 @@
+{
+  "item_description": "The item is named '{item.item_name}'. Based on the attached icon, describe its physical form and magical aura in one detailed sentence for a cinematic character manifest.",
+  "defined_items" : ["Face Acc.","Eye Acc.","Earring","Weapon","Hat","Top","Bottom","Cape","Glove","Shoes"],
+  "description_required_items" : ["Weapon","Top","Cape"]
+}
