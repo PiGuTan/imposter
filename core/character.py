@@ -147,7 +147,7 @@ class Character:
 
     async def _process_single_item(self, item):
         agent = client.Gemini_agent()
-        prompt = static_data.item_prompt
+        prompt = static_data.item_prompt.format(item_name=item.item_name)
         agent.set_prompt(item.item_url,prompt)
         try:
             await agent.generate()
