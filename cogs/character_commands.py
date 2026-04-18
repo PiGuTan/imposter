@@ -3,7 +3,8 @@ import discord
 from discord import app_commands
 
 import io
-import asyncio
+import sys
+import traceback
 
 import util
 from core import Character, Character_Image, content_processor
@@ -33,7 +34,8 @@ class CharacterCommands(commands.Cog):
             else:
                 await interaction.delete_original_response()
         except Exception as e:
-            util.bot_logger.error(f"imposter shot circuited with error\n{e}", result="error")
+            util.bot_logger.error(f"error={e}, traceback={traceback.extract_tb(sys.exc_info()[2])[-1].lineno}", result="error")
+            await interaction.followup.send(f"imposter shot circuited with error\n{e}")
 
     @app_commands.command(name="preview", description="shows what the bot can do")
     @app_commands.allowed_installs(guilds=False, users=True)
@@ -59,6 +61,7 @@ class CharacterCommands(commands.Cog):
             gif_bytes, extension = get_image_io(character.image_url,action=action,expression=expression)
             await interaction.followup.send(file=discord.File(io.BytesIO(gif_bytes), filename=f"{ign}.{extension}"))
         except Exception as e:
+            util.bot_logger.error(f"error={e}, traceback={traceback.extract_tb(sys.exc_info()[2])[-1].lineno}", result="error")
             await interaction.followup.send(f"imposter shot circuited with error\n{e}")
 
     @app_commands.command(name="draw", description="draws out the character with action and expression")
@@ -94,7 +97,7 @@ class CharacterCommands(commands.Cog):
             await interaction.followup.send(file=discord.File(artwork, filename=file_name))
 
         except Exception as e:
-            util.bot_logger.error(f"error={e}, debug=1{debug}", interaction_id=interaction.id,
+            util.bot_logger.error(f"error={e}, traceback={traceback.extract_tb(sys.exc_info()[2])[-1].lineno}", interaction_id=interaction.id,
                                   result="error")
             await interaction.followup.send(f"imposter shot circuited with error\n{e}")
 
@@ -118,11 +121,11 @@ class CharacterCommands(commands.Cog):
             image_url,prompt,beauty_details = get_prompt_with_context(character, action, expression, style, proportions,other_instructions)
             await interaction.followup.send(content=image_url)
             if prompt:
-                file = discord.File(io.StringIO(prompt), filename=f"{ign}_prompt.txt")
+                file = discord.File(io.StringIO(prompt), filename=f"{ign}_prompt.md")
                 await interaction.followup.send(file=file)
             # await interaction.followup.send(content=beauty_details)
         except Exception as e:
-            util.bot_logger.error(f"error={e}", result="error")
+            util.bot_logger.error(f"error={e}, traceback={traceback.extract_tb(sys.exc_info()[2])[-1].lineno}", result="error")
             await interaction.followup.send(f"imposter shot circuited with error\n{e}")
 
 async def setup(bot):
