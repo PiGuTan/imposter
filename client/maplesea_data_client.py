@@ -4,6 +4,8 @@ import os
 import logging
 from dotenv import load_dotenv
 
+import util
+
 host = "https://open.api.nexon.com/"
 
 load_dotenv()
@@ -18,28 +20,25 @@ class Data_Agent:
         self.resp_headers = {}
         self._ocid = ""
 
-        self.call_stack = {}
-
         # uncommon params
         self.date = date
 
     def _call_openapi(self, endpoint: str = None, params=None):
         url = host + endpoint
         if not params:
-            logging.error(f"params is empty %s", self.call_stack)
+            util.bot_logger.error(f"params is empty",result="empty_params")
             return {}
         if not endpoint:
-            logging.error(f"endpoint is empty %s", self.call_stack)
+            util.bot_logger.error(f"endpoint is empty",result="empty_endpoint")
             return {}
 
         response = requests.request("GET", url, headers=headers, data={}, params=params)
 
         if response.status_code != 200:
-            logging.error(response.status_code)
+            util.bot_logger.error(f"http_code={response.status_code},url={url},params={params},response={response.text if response.text else None}",result="maplesea_open_api_error")
             return {}
 
         self.resp_headers = response.headers
-        self.call_stack[endpoint] = self.resp_headers["x-request-id"]
         if not self.resp_headers.get('Content-Type').__contains__('application/json'):
             self.resp_dict = {}
         else:

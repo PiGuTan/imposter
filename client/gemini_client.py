@@ -3,6 +3,8 @@ import os
 from google import genai
 from google.genai import types
 
+import util
+
 client = genai.Client(api_key=os.getenv('GEMINI_TOKEN'))
 text_model = "gemini-2.5-flash"
 image_model = "gemini-2.5-flash-image"
@@ -38,7 +40,7 @@ class Gemini_agent:
                 config=self.config
             )
         except Exception as e:
-            print(f"Error: {e}")
+            util.bot_logger.error(f"error={e}", result="gemini_error")
 
     def get_response_data(self):
         if len(self._contents) == 0:
@@ -51,5 +53,5 @@ class Gemini_agent:
                 text_out += part.text
             if part.inline_data:
                 image_bytes = io.BytesIO(part.inline_data.data)
-
+        util.bot_logger.error(f"error={e}", result="gemini_error")
         return text_out, image_bytes

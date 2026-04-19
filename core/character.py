@@ -52,12 +52,6 @@ class Beauty_item:
             **({'color': self.colour} if self.colour else {})
         }
 
-    def __str__(self):
-        print_items = [self.item_type, self.item_name]
-        if self.colour:
-            print_items.append(self.colour)
-        return "|".join(print_items)
-
 class Character:
     def __init__(self, character_name:str, date = None):
         self.character_name = character_name
@@ -141,7 +135,6 @@ class Character:
             self._process_cash_item = True
 
     def merge_temp_items(self):
-        # print(self._temp_items)
         for item in self._temp_items.values():
             self._beauty_items.append(item)
 

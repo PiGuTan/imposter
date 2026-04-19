@@ -1,5 +1,6 @@
 import requests
 import logging
+import util
 
 class Image_Client:
     def __init__(self, url, params:str=""):
@@ -15,6 +16,7 @@ class Image_Client:
             return None
 
         response = requests.request("GET", self.url + params)
+        util.bot_logger.info(f"url={self.url},code={response.status_code}", result="maple_image_call")
         return response.content
 
     def _call_openapi_with_cache(self,params:str=None, a_frame:int=0, e_frame:int=0):
