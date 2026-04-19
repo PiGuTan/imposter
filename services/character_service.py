@@ -30,7 +30,7 @@ def get_image_url(image_url, action, expression) -> str:
 def get_params(action, expression) -> tuple | None:
     """Returns (param, a_frames, e_frames, debug) or None."""
 
-def get_prompt_with_context(character:Character,action, expression,style,proportions,other_instructions) -> (str,str,str):
+def get_prompt_with_context(character:Character,action, expression) -> (str,str,str):
     """generates an image + prompt + """
     try:
         param, a_frames, e_frames, a_param, e_param, debug = content_processor.build_params(action=action, emotion=expression)

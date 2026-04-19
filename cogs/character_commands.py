@@ -118,7 +118,7 @@ class CharacterCommands(commands.Cog):
 
         try:
             await character.get_all_beauty_items()
-            image_url,prompt,beauty_details = get_prompt_with_context(character, action, expression, style, proportions,other_instructions)
+            image_url,prompt,beauty_details = get_prompt_with_context(character, action, expression)
             await interaction.followup.send(content=image_url)
             if prompt:
                 file = discord.File(io.StringIO(prompt), filename=f"{ign}_prompt.md")
