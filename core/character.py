@@ -1,6 +1,7 @@
 import client
 import asyncio
 import json
+import util
 
 class Static_data:
     def __init__(self):
@@ -36,12 +37,12 @@ class Beauty_item:
     @classmethod
     def with_beauty(cls,beauty_type, data:dict):
         item = cls(beauty_type,data[f'{beauty_type}_name'])
-        if data['mix_color']:
-            mix_amount = data['mix_rate']
-            base_amount = 100-int(data['mix_rate'])
-            item.colour = f"{base_amount}% {data['base_color']}, {mix_amount}% {data['mix_color']}"
-        else:
-            item.colour = data['base_color']
+        # if data['mix_color']:
+        #     mix_amount = data['mix_rate']
+        #     base_amount = 100-int(data['mix_rate'])
+        #     item.colour = f"{base_amount}% {data['base_color']}, {mix_amount}% {data['mix_color']}"
+        # else:
+        #     item.colour = data['base_color']
         return item
 
     @property
@@ -49,7 +50,6 @@ class Beauty_item:
         return {
             'type': self.item_type,
             'name': self.description if self.description else self.item_name,
-            **({'color': self.colour} if self.colour else {})
         }
 
 class Character:
@@ -144,10 +144,12 @@ class Character:
         agent.set_prompt(item.item_url,prompt)
         try:
             await agent.generate()
+            description, _ = agent.get_response_data()
+            item.description = description
         except Exception as e:
-            print(e) #dont need to fail
-        description, _ = agent.get_response_data()
-        item.description = description
+            #dont need to fail
+            item.description = ""
+            util.bot_logger.error(f"error={e}", result="process_single_item_error")
 
     async def post_process_beauty_items(self):
         self._beauty_items = [i for i in self._beauty_items if "Transparent" not in i.item_name]
@@ -190,6 +192,7 @@ class Character:
 
             return self._beauty_items
         except Exception as e:
+            util.bot_logger.error(f"error={e}", result="get_all_beauty_item_error")
             return self._beauty_items
 
     @property

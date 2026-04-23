@@ -6,10 +6,16 @@
     "E00": "",
     "E01": "An eye closed with a gentle smile, in an attempt to hint something",
     "E02": "A wide, genuine smile that reaches the eyes, causing them to crinkle at the corners",
-
-    "E06":"Eyelids gently closed, lashes resting softly against the cheek",
-
-
+    "E03": "weary and mildly exasperated, as evidenced by their tightly shut eyes, slightly downturned mouth, and the small bead of sweat on their cheek, suggesting a sense of quiet exhaustion or being overwhelmed by their task",
+    "E04": "a sense of intense distress or acute physical pain, characterized by their eyes being squeezed tightly shut into sharp, inward-pointing angles and their mouth held open as if letting out a sudden, involuntary cry of discomfort",
+    "E05": "bewildered, with wide, surprised eyes and a slightly agape mouth, suggesting a moment of confusion or unexpectedness",
+    "E06": "eyelids gently closed, lashes resting softly against the cheek",
+    "E07": "extremely furious, with glowing red eyes, a tightly clenched jaw, and an agitated posture suggesting intense anger or rage",
+    "E08": "calm and tranquil state, possibly asleep or deep in thought, as indicated by its closed eyes, relaxed posture, and the bubble gently emerging from its mouth",
+    "E09": "experiencing an intense emotion, possibly overwhelming joy or even a dramatic, exaggerated form of crying, with their mouth wide open in a scream or laugh and eyes squeezed shut",
+    "E10": "expressing an affectionate emotion, indicated by the puckered lips as if blowing a kiss",
+    "E11": "",
+    "E12": "",
     "E13":"Eyes filled with tiny, glittering catchlights (specular highlights) to show excitement",
     "E14":"Eyes wide and dilated, eyebrows raised high on the forehead",
 

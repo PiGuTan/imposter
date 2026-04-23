@@ -63,12 +63,10 @@ class PromptBuilder:
         """part of build equipent manifest"""
         if "hair" in beauty_items:
             hair = beauty_items["hair"]["name"]
-            color = beauty_items["hair"]["color"]
-            self.beauty_list.append(f"Hair: {hair} with {color}")
+            self.beauty_list.append(f"Hair: {hair}")
         if "face" in beauty_items:
             face = beauty_items["face"]["name"]
-            color = beauty_items["face"]["color"]
-            self.beauty_list.append(f"Face: {face} with {color}")
+            self.beauty_list.append(f"Face: {face}")
 
     def build_hat(self,beauty_items:dict=None):
         """part of build equipment manifest"""
@@ -125,13 +123,13 @@ class PromptBuilder:
         if not beauty_items or beauty_items == {}:
             return self
         self.beauty_list = [self.prompt.equipment_manifest_header]
-
-        self.build_face_hair(beauty_items)
-        self.build_hat(beauty_items)
-        self.build_outfit(beauty_items)
-        self.build_accessories(beauty_items)
-        self.build_footwear(beauty_items)
-        self.build_weapon(beauty_items)
+        with suppress(KeyError):
+            self.build_face_hair(beauty_items)
+            self.build_hat(beauty_items)
+            self.build_outfit(beauty_items)
+            self.build_accessories(beauty_items)
+            self.build_footwear(beauty_items)
+            self.build_weapon(beauty_items)
 
         self.prompt.equipment_manifest = "\n".join(self.beauty_list)
         self.prompt.prompt_detail.append(self.prompt.equipment_manifest)
@@ -140,8 +138,8 @@ class PromptBuilder:
 
 def build_prompt(beauty_items,a_param="A00",e_param="E00") -> str:
     prompt_builder = PromptBuilder()
-    with suppress(KeyError):
-        prompt_builder.build_pose_and_action(a_param = a_param, e_param = e_param)
-        prompt_builder.build_equipment_manifest(beauty_items)
+
+    prompt_builder.build_pose_and_action(a_param = a_param, e_param = e_param)
+    prompt_builder.build_equipment_manifest(beauty_items)
     return prompt_builder.prompt.full_prompt
 

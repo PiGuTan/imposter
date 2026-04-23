@@ -52,20 +52,31 @@ class Gemini_agent:
                 config=self.config
             )
         except Exception as e:
-            util.bot_logger.error(f"error={e}", result="gemini_error")
+            util.bot_logger.error(f"error={e}", result="gemini_call_error")
 
     def get_response_data(self):
         if len(self._contents) == 0:
+            util.bot_logger.error(f"no prompt found", result="gemini_content_error")
+            return "",None
+        if not self.response:
+            util.bot_logger.error(f"no response found", result="gemini_response_error")
+            return "",None
+        if len(self.response.candidates) == 0:
+            util.bot_logger.error(f"empty candidates in response", result="gemini_response_error")
             return "",None
         text_out = ""
         image_bytes = None
-        candidates = self.response.candidates[0]
-        if candidates.url_context_metadata.url_metadata:
-            util.bot_logger.debug(get_url_metadata(candidates),result="gemini_url_context_metadata")
-        for part in self.response.candidates[0].content.parts:
-            if part.text:
-                text_out += part.text
-            if part.inline_data:
-                image_bytes = io.BytesIO(part.inline_data.data)
-        util.bot_logger.info(f"text={text_out},image={bool(image_bytes)}", result="gemini_success")
-        return text_out, image_bytes
+        try:
+            candidates = self.response.candidates[0]
+            if candidates.url_context_metadata.url_metadata:
+                util.bot_logger.debug(get_url_metadata(candidates),result="gemini_url_context_metadata")
+            for part in self.response.candidates[0].content.parts:
+                if part.text:
+                    text_out += part.text
+                if part.inline_data:
+                    image_bytes = io.BytesIO(part.inline_data.data)
+            util.bot_logger.info(f"text={text_out},image={bool(image_bytes)}", result="gemini_success")
+            return text_out, image_bytes
+        except Exception as e:
+            util.bot_logger.error(f"error={e}", result="gemini_error")
+            return "",None
