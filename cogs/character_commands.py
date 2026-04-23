@@ -67,39 +67,35 @@ class CharacterCommands(commands.Cog):
     @app_commands.command(name="draw", description="draws out the character with action and expression")
     @app_commands.allowed_installs(guilds=True, users=True)
     @app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
-    async def draw(self, interaction: discord.Interaction, ign: str, action: str = None, expression: str = None,
-                   style: str = "photo realistic"):
+    async def draw(self, interaction: discord.Interaction, ign: str, action: str = None, expression: str = None):
         util.bot_logger.info(f"ign={ign}, action={action}, expression={expression}", interaction_id=interaction.id,
                              result="receive")
         await interaction.response.defer(thinking=True)
 
-        image_url = Character(ign).image_url
-        if not image_url:
-            util.bot_logger.info(f"ign not found ign={ign}",result="error")
+        character = Character(ign)
+        if not character:
+            util.bot_logger.info(f"ign not found ign={ign}", result="error")
             await interaction.followup.send(f"Who is {ign}:question:")
             return
 
-        if not (action or expression):
-            util.bot_logger.info(f"no action or expression found", result="success")
-            artwork, e = generate_maple_art_with_url(image_url, style)
-            await interaction.followup.send(file=discord.File(artwork, filename=f"{ign}.png"))
-            return
-        debug = {}
         try:
-            param, a_frames, e_frames, _, _, debug = content_processor.build_params(action=action, emotion=expression)
-            util.bot_logger.info(f"{debug}", interaction_id=interaction.id,
-                                 result="process_params")
-            image = Character_Image(image_url, params=param)
-            artwork, e = generate_maple_art(image.get_single_image(a_frames, e_frames), user_prompt_style=style)
-            file_name = content_processor.parse_file_name(ign, param, extension="png")
-            with open("output_file.png", "wb") as f:
-                f.write(artwork.getvalue())
-            await interaction.followup.send(file=discord.File(artwork, filename=file_name))
-
+            await character.get_all_beauty_items()
+            image_url, prompt, beauty_details = get_prompt_with_context(character, action, expression)
+            # await interaction.followup.send(content=image_url)
+            if prompt:
+                file = discord.File(io.StringIO(prompt), filename=f"{ign}_prompt.md")
+                await interaction.followup.send(file=file)
         except Exception as e:
-            util.bot_logger.error(f"error={e}, traceback={traceback.extract_tb(sys.exc_info()[2])[-1].lineno}", interaction_id=interaction.id,
+            util.bot_logger.error(f"error={e}, traceback={traceback.extract_tb(sys.exc_info()[2])[-1].lineno}",
                                   result="error")
             await interaction.followup.send(f"imposter shot circuited with error\n{e}")
+        try:
+            # prompt + image_url = artwork?
+            pass
+        except Exception as e:
+            util.bot_logger.error(f"error={e}, traceback={traceback.extract_tb(sys.exc_info()[2])[-1].lineno}",
+                                  result="artwork_gen_error")
+            # return prompt?
 
     @app_commands.command(name="create_prompt", description="imitates a users character with an action and expression")
     @app_commands.allowed_installs(guilds=True, users=True)
