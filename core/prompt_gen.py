@@ -136,10 +136,11 @@ class PromptBuilder:
         return self
 
 
-def build_prompt(beauty_items,a_param="A00",e_param="E00") -> str:
+def build_prompt(beauty_items,a_param="A00",e_param="E00",build_equipment_detail=True) -> str:
     prompt_builder = PromptBuilder()
 
     prompt_builder.build_pose_and_action(a_param = a_param, e_param = e_param)
-    prompt_builder.build_equipment_manifest(beauty_items)
+    if build_equipment_detail:
+        prompt_builder.build_equipment_manifest(beauty_items)
     return prompt_builder.prompt.full_prompt
 

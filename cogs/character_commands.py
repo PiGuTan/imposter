@@ -63,7 +63,7 @@ class CharacterCommands(commands.Cog):
     @app_commands.command(name="draw", description="draws out the character with action and expression")
     @app_commands.allowed_installs(guilds=True, users=True)
     @app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
-    async def draw(self, interaction: discord.Interaction, ign: str, action: str = None, expression: str = None):
+    async def draw(self, interaction: discord.Interaction, ign: str, action: str = None, expression: str = None,build_equipment_detail:bool=True):
         util.bot_logger.info(f"ign={ign}, action={action}, expression={expression}", interaction_id=interaction.id,
                              result="receive")
         await interaction.response.defer(thinking=True)
@@ -81,7 +81,7 @@ class CharacterCommands(commands.Cog):
 
         try:
             await character.get_all_beauty_items()
-            image, prompt, beauty_details = get_prompt_with_context(character, action, expression)
+            image, prompt, beauty_details = get_prompt_with_context(character, action, expression,build_equipment_detail=build_equipment_detail)
             await user.send(file=discord.File(io.BytesIO(image), filename=f"{ign}.png"))
             if not prompt:
                 raise util.MissingIGNError(f"missing prompt for {ign}")
