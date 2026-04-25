@@ -1,11 +1,8 @@
-from importlib.metadata import metadata
-
 from core import Character, Character_Image
 from PIL import Image
 from core import content_processor,build_prompt
 from client import Gemini_agent
 import util
-import io
 
 def get_character(ign) -> Character | None:
     """Returns Character if valid, None if not found."""

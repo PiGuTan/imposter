@@ -1,14 +1,10 @@
 from discord.ext import commands
 import discord
 from discord import app_commands
-
 import io
-import sys
-import traceback
 
 import util
-from core import Character, Character_Image, content_processor
-from core import generate_maple_art,generate_maple_art_with_url
+from core import Character
 from services.character_service import get_character, get_image_io, get_prompt_with_context,generate_artwork
 
 
