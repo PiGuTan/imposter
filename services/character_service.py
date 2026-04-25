@@ -46,7 +46,7 @@ def get_prompt_with_context(character:Character,action, expression,build_equipme
 async def generate_artwork(image, prompt):
     """Generates an artwork image."""
     gemini_agent = Gemini_agent(require_image=True)
-    gemini_agent.set_prompt(image)
+    gemini_agent.set_prompt_bytes(image)
     gemini_agent.set_prompt(prompt)
     error = await gemini_agent.generate()
     if error and error.code == 429:
