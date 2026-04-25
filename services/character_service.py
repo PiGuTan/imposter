@@ -29,14 +29,14 @@ def get_image_url(image_url, action, expression) -> str:
 def get_params(action, expression) -> tuple | None:
     """Returns (param, a_frames, e_frames, debug) or None."""
 
-def get_prompt_with_context(character:Character,action, expression) -> (str,str,str):
+def get_prompt_with_context(character:Character,action, expression,build_equipment_detail=True) -> (str,str,str):
     """generates an image + prompt + """
     try:
         param, a_frames, e_frames, a_param, e_param, debug = content_processor.build_params(action=action, emotion=expression)
         image = Character_Image(character.image_url, params=param)
         image = image.get_single_image(a_frames, e_frames)
 
-        full_prompt = build_prompt(character.beauty_items,a_param=a_param,e_param=e_param)
+        full_prompt = build_prompt(character.beauty_items,a_param=a_param,e_param=e_param,build_equipment_detail=build_equipment_detail)
 
         return image, full_prompt, character.beauty_items
     except Exception as e:
