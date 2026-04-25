@@ -53,7 +53,8 @@ class Gemini_agent:
             return
         if len(self._contents) > 0:
             self._contents += prompt
-        self._contents = prompt
+        else:
+            self._contents = prompt
 
     async def generate(self):
         if self._contents is None:
