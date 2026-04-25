@@ -69,7 +69,10 @@ class Logger:
         self._log(logging.DEBUG, message, result, **kwargs)
 
     def error(self, message, result="-",**kwargs):
-        frame = traceback.extract_tb(sys.exc_info()[2])[-2]
+        try:
+            frame = traceback.extract_tb(sys.exc_info()[2])[-2]
+        except:
+            frame = None
         kwargs['trace_name'] = frame.filename if frame else "unknown file"
         kwargs['trace_line'] = frame.lineno if frame else -1
         self._log(logging.ERROR, message, result, **kwargs)

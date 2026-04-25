@@ -3,7 +3,9 @@ from importlib.metadata import metadata
 from core import Character, Character_Image
 from PIL import Image
 from core import content_processor,build_prompt
+from client import Gemini_agent
 import util
+import io
 
 def get_character(ign) -> Character | None:
     """Returns Character if valid, None if not found."""
@@ -35,12 +37,25 @@ def get_prompt_with_context(character:Character,action, expression) -> (str,str,
     try:
         param, a_frames, e_frames, a_param, e_param, debug = content_processor.build_params(action=action, emotion=expression)
         image = Character_Image(character.image_url, params=param)
-        image_url = image.get_single_image_url(a_frames, e_frames)
+        image = image.get_single_image(a_frames, e_frames)
 
-        #how do i pass a frame and eframe over?
         full_prompt = build_prompt(character.beauty_items,a_param=a_param,e_param=e_param)
 
-        return image_url, full_prompt, character.beauty_items
+        return image, full_prompt, character.beauty_items
     except Exception as e:
         util.bot_logger.error(f"error={e}", result="error")
         return None
+
+async def generate_artwork(image, prompt):
+    """Generates an artwork image."""
+    gemini_agent = Gemini_agent(require_image=True)
+    gemini_agent.set_prompt(image)
+    gemini_agent.set_prompt(prompt)
+    error = await gemini_agent.generate()
+    if error and error.code == 429:
+        raise util.RateLimitError("Owner is broke and does not have enough money to fund project. Kindly donate")
+    elif error:
+        util.bot_logger.error(f"error={error}", result="generate_error")
+        raise error
+    _, gen_image = gemini_agent.get_response_data()
+    return gen_image

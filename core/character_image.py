@@ -49,10 +49,11 @@ class Character_Image:
         return io_byte, "gif"
 
     def get_single_image(self, a_frames=None, e_frames=None):
-        a_frame = random_choice(a_frames) if a_frames and len(a_frames)>0 else []
-        e_frame = random_choice(e_frames) if e_frames and len(e_frames)>0 else []
+        a_frame = random_choice(a_frames) if a_frames and len(a_frames)>0 else 0
+        e_frame = random_choice(e_frames) if e_frames and len(e_frames)>0 else 0
         images = self.get_all_images(a_frames=[a_frame], e_frames=[e_frame])
-        return images[0]
+        image,_ = self.process_image()
+        return image
 
     def get_single_image_url(self, a_frames=None, e_frames=None):
         a_frame = random_choice(a_frames) if a_frames and len(a_frames)>0 else []
