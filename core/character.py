@@ -164,12 +164,18 @@ class Character:
     async def _process_single_item_db(self, item):
         try:
             # refactor to item description?
-            coros = [item_main_tab.get_single({"item_name":item.item_name}),item_temp_tab.get_single({"item_name":item.item_name})]
-            tasks = [asyncio.create_task(c) for c in coros]
-            done, pending = await asyncio.wait(tasks, return_when=asyncio.FIRST_COMPLETED)
-            first_result = done.pop().result()
-            item_desc = first_result.get("item_desc","")
-            item.description = item_desc
+            main_task = asyncio.create_task(item_main_tab.get_single({"item_name": "Growing Sprout Hat"}))
+            temp_task = asyncio.create_task(item_temp_tab.get_single({"item_name": "Growing Sprout Hat"}))
+            main_data = await main_task
+            if main_data and "item_desc" in main_data and main_data["item_desc"]:
+                temp_task.cancel()
+                item.description = main_data["item_desc"]
+                util.bot_logger.debug(f"item_desc={main_data['item_desc']}", result="fetch_item_main_success")
+                return
+            temp_data = await temp_task
+            if temp_data and "item_desc" in temp_data and temp_data["item_desc"]:
+                item.description = temp_data["item_desc"]
+                util.bot_logger.debug(f"item_desc={temp_data['item_desc']}",result="fetch_item_temp_success")
         except Exception as e:
             #dont need to fail
             item.description = ""
@@ -182,8 +188,9 @@ class Character:
         try:
             await agent.generate()
             description, _ = agent.get_response_data()
-            item.description = description
-            await item_temp_tab.insert(item.db_dict)
+            if description:
+                item.description = description
+                await item_temp_tab.insert(item.db_dict)
         except Exception as e:
             #dont need to fail
             item.description = ""
