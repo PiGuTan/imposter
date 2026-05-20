@@ -6,6 +6,3 @@ class MissingIGNError(Exception):
 
 class MissingAssetError(Exception):
     pass
-
-class MissingDBError(Exception):
-    pass

@@ -20,4 +20,3 @@ yarl==1.20.0
 spacy
 thefuzz
 google-genai
-pymongo[srv]
