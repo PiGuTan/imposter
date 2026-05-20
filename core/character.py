@@ -15,7 +15,7 @@ class Static_data:
 
 static_data = Static_data()
 
-item_main_tab = client.DataBase_tab("item_db","item_description_tab")
+item_main_tab = client.DataBase_tab("item_db","item_desc_tab")
 item_temp_tab = client.DataBase_tab("item_db","item_desc_tab_temp")
 
 class Beauty_item:

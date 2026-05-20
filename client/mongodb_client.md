@@ -2,7 +2,7 @@ expected schema
 ```
 <project>
     - item_db
-        - item_description_tab
+        - item_desc_tab
             - _id_
             - item_name (asc, unique)
             - m_time (asc)
