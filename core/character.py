@@ -3,6 +3,8 @@ import asyncio
 import json
 import util
 
+from datetime import datetime,timezone
+
 class Static_data:
     def __init__(self):
         with open("core/data/item_prompt.json") as f:
@@ -12,6 +14,9 @@ class Static_data:
             self.description_required_items:list[str] = data["description_required_items"]
 
 static_data = Static_data()
+
+item_main_tab = client.DataBase_tab("item_db","item_desc_tab")
+item_temp_tab = client.DataBase_tab("item_db","item_desc_tab_temp")
 
 class Beauty_item:
     def __init__(self, item_type:str, item_name:str,item_url:str=None):
@@ -50,6 +55,15 @@ class Beauty_item:
         return {
             'type': self.item_type,
             'name': self.description if self.description else self.item_name,
+        }
+
+    @property
+    def db_dict(self):
+        return {
+            "item_name":self.item_name,
+            "item_desc":self.description if self.description else "",
+            "url":self.item_url if self.item_url else "",
+            "m_time": datetime.now(timezone.utc)
         }
 
 class Character:
@@ -139,17 +153,48 @@ class Character:
             self._beauty_items.append(item)
 
     async def _process_single_item(self, item):
+        try:
+            await self._process_single_item_db(item)
+            if not item.description:
+                await self._process_single_item_ai(item)
+        except Exception as e:
+            item.description = ""
+            util.bot_logger.error(f"error={e}", result="process_single_item_error")
+
+    async def _process_single_item_db(self, item):
+        try:
+            # refactor to item description?
+            main_task = asyncio.create_task(item_main_tab.get_single({"item_name": "Growing Sprout Hat"}))
+            temp_task = asyncio.create_task(item_temp_tab.get_single({"item_name": "Growing Sprout Hat"}))
+            main_data = await main_task
+            if main_data and "item_desc" in main_data and main_data["item_desc"]:
+                temp_task.cancel()
+                item.description = main_data["item_desc"]
+                util.bot_logger.debug(f"item_desc={main_data['item_desc']}", result="fetch_item_main_success")
+                return
+            temp_data = await temp_task
+            if temp_data and "item_desc" in temp_data and temp_data["item_desc"]:
+                item.description = temp_data["item_desc"]
+                util.bot_logger.debug(f"item_desc={temp_data['item_desc']}",result="fetch_item_temp_success")
+        except Exception as e:
+            #dont need to fail
+            item.description = ""
+            util.bot_logger.error(f"error={e}", result="process_single_item_db_error")
+
+    async def _process_single_item_ai(self,item):
         agent = client.Gemini_agent()
         prompt = static_data.item_prompt.format(item_name=item.item_name)
         agent.set_prompt(item.item_url,prompt)
         try:
             await agent.generate()
             description, _ = agent.get_response_data()
-            item.description = description
+            if description:
+                item.description = description
+                await item_temp_tab.insert(item.db_dict)
         except Exception as e:
             #dont need to fail
             item.description = ""
-            util.bot_logger.error(f"error={e}", result="process_single_item_error")
+            util.bot_logger.error(f"error={e}", result="process_single_item_ai_error")
 
     async def post_process_beauty_items(self):
         self._beauty_items = [i for i in self._beauty_items if "Transparent" not in i.item_name]
