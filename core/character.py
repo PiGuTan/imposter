@@ -17,6 +17,8 @@ static_data = Static_data()
 
 item_main_tab = client.DataBase_tab("item_db","item_desc_tab")
 item_temp_tab = client.DataBase_tab("item_db","item_desc_tab_temp")
+item_main_tab.ping()
+item_temp_tab.ping()
 
 class Beauty_item:
     def __init__(self, item_type:str, item_name:str,item_url:str=None):

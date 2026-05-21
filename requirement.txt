@@ -21,3 +21,5 @@ spacy
 thefuzz
 google-genai
 pymongo[srv]
+distro
+dnspython
