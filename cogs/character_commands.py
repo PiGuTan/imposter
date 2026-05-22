@@ -5,7 +5,7 @@ import io
 
 import util
 from core import Character
-from services.character_service import get_character, get_image_io, get_prompt_with_context,generate_artwork
+from services.character_service import get_character, get_image_io, get_prompt_with_context,generate_artwork,build_equipment_manifest
 
 
 class CharacterCommands(commands.Cog):
@@ -100,8 +100,7 @@ class CharacterCommands(commands.Cog):
     @app_commands.command(name="create_prompt", description="imitates a users character with an action and expression")
     @app_commands.allowed_installs(guilds=True, users=True)
     @app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
-    async def create_prompt(self, interaction: discord.Interaction, ign: str, action: str = None, expression: str = None,
-                            style: str = "photo realistic", proportions:str = "adult", other_instructions: str = None):
+    async def create_prompt(self, interaction: discord.Interaction, ign: str, action: str = None, expression: str = None,):
         util.bot_logger.info(f"ign={ign}, action={action}, expression={expression}", interaction_id=interaction.id,
                              result="receive")
         await interaction.response.defer(thinking=True)
@@ -117,9 +116,30 @@ class CharacterCommands(commands.Cog):
             image,prompt,beauty_details = get_prompt_with_context(character, action, expression)
             await interaction.followup.send(file=discord.File(io.BytesIO(image), filename=f"{ign}.png"))
             if prompt:
-                file = discord.File(io.StringIO(prompt), filename=f"{ign}_prompt.md")
+                file = discord.File(io.StringIO(prompt), filename=f"{ign}_drawing.md")
                 await interaction.followup.send(file=file)
-            # await interaction.followup.send(content=beauty_details)
+        except Exception as e:
+            util.bot_logger.error(f"error={e}", result="error")
+            await interaction.followup.send(f"imposter shot circuited with error\n{e}")
+
+    @app_commands.command(name="get_equip", description="takes notes of equipments used by character")
+    @app_commands.allowed_installs(guilds=True, users=True)
+    @app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
+    async def get_equip(self, interaction: discord.Interaction, ign: str):
+        util.bot_logger.info(f"ign={ign}", interaction_id=interaction.id,
+                             result="receive")
+        await interaction.response.defer(thinking=True)
+
+        character = Character(ign)
+        if not character.ocid:
+            util.bot_logger.info(f"ign not found ign={ign}",result="error")
+            await interaction.followup.send(f"Who is {ign}:question:")
+            return
+
+        try:
+            await character.get_all_beauty_items()
+            manifest = build_equipment_manifest(character)
+            await interaction.followup.send(manifest)
         except Exception as e:
             util.bot_logger.error(f"error={e}", result="error")
             await interaction.followup.send(f"imposter shot circuited with error\n{e}")

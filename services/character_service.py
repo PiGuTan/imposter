@@ -1,6 +1,6 @@
 from core import Character, Character_Image
 from PIL import Image
-from core import content_processor,build_prompt
+from core import content_processor,build_prompt,build_equipment_manifest_only
 from client import Gemini_agent
 import util
 
@@ -39,6 +39,16 @@ def get_prompt_with_context(character:Character,action, expression,build_equipme
         full_prompt = build_prompt(character.beauty_items,a_param=a_param,e_param=e_param,build_equipment_detail=build_equipment_detail)
 
         return image, full_prompt, character.beauty_items
+    except Exception as e:
+        util.bot_logger.error(f"error={e}", result="error")
+        return None
+
+def build_equipment_manifest(character:Character):
+    """generates equipment details manifest"""
+    try:
+        manifest = build_equipment_manifest_only(character.beauty_items)
+
+        return manifest
     except Exception as e:
         util.bot_logger.error(f"error={e}", result="error")
         return None

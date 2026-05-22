@@ -33,6 +33,9 @@ class Prompt:
         prompt_detail = "\n\n".join(self.prompt_detail)
         return prompt_detail
 
+    @property
+    def equipment_prompt(self):
+        return self.equipment_manifest
 
 class PromptBuilder:
     def __init__(self):
@@ -144,3 +147,7 @@ def build_prompt(beauty_items,a_param="A00",e_param="E00",build_equipment_detail
         prompt_builder.build_equipment_manifest(beauty_items)
     return prompt_builder.prompt.full_prompt
 
+def build_equipment_manifest_only(beauty_items) -> str:
+    prompt_builder = PromptBuilder()
+    prompt_builder.build_equipment_manifest(beauty_items)
+    return prompt_builder.prompt.equipment_manifest
