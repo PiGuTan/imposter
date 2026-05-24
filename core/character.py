@@ -166,8 +166,8 @@ class Character:
     async def _process_single_item_db(self, item):
         try:
             # refactor to item description?
-            main_task = asyncio.create_task(item_main_tab.get_single({"item_name": "Growing Sprout Hat"}))
-            temp_task = asyncio.create_task(item_temp_tab.get_single({"item_name": "Growing Sprout Hat"}))
+            main_task = asyncio.create_task(item_main_tab.get_single({"item_name": item.item_name}))
+            temp_task = asyncio.create_task(item_temp_tab.get_single({"item_name": item.item_name}))
             main_data = await main_task
             if main_data and "item_desc" in main_data and main_data["item_desc"]:
                 temp_task.cancel()
